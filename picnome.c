@@ -42,6 +42,11 @@ void main()
   setup_vref(FALSE);
   //Setup_Oscillator parameter not selected from Intr Oscillator Config tab
 
+  //Parameters Initialized
+  getParaFromEeprom(&para, sizeof(para), 0);
+  if(!(para.intensity > 0))
+    initAndSaveParaToEeprom();
+
   //Button Initialized
   buttonInit();
 
@@ -86,20 +91,18 @@ void initLedDriver(void)
 {
   int i;
 
-  sendSpiLED(0x0B, 0x07);         // Scan Limit full range
-  //sy sendSpiLED(0x0A, 0x04);         // Max Intensity 0x00[min] - 0x0F[max]
-  sendSpiLED(0x0A, 0x0F);         // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED(0x0B, 0x07);           // Scan Limit full range
+  sendSpiLED(0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
   for(i = 1; i < 9; i++)
-    sendSpiLED(i, i);             // print startup pattern 
-  sendSpiLED(0x0C, 0x01);         // Shutdown Normal Operation
-  sendSpiLED(0x0F, 0x00);         // Display Test Off
+    sendSpiLED(i, i);               // print startup pattern 
+  sendSpiLED(0x0C, 0x01);           // Shutdown Normal Operation
+  sendSpiLED(0x0F, 0x00);           // Display Test Off
   for(i = 0; i < 64; i++)
   {
-    sendSpiLED(10, (64 - i) / 4); // set to max intensity
+    sendSpiLED(10, (64 - i) / 4);   // set to max intensity
     delay_ms(8);
   }
-  //sy sendSpiLED(0x0A, 0x04);         // Max Intensity 0x00[min] - 0x0F[max]
-  sendSpiLED(0x0A, 0x0F);         // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED(0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
 
   for(i = 1; i < 9; i++)
     sendSpiLED(i, 0x00);
@@ -142,9 +145,9 @@ void receiveOscMsgs(void)
       ch = strtok(0, space);
       state = atoi(ch);
       if(state == 0)
-   led_data[y] &= ~(1 << x);
+        led_data[y] &= ~(1 << x);
       else
-   led_data[y] |= (1 << x);
+        led_data[y] |= (1 << x);
       
       sendSpiLED(y + 1, led_data[y]);
     }
@@ -156,20 +159,23 @@ void receiveOscMsgs(void)
       ch = strtok(0, space);
       data = atoi(ch);
       
-      if (firstRun == TRUE) {
-   for (i = 0; i < 8; i++) {
-     led_data[i] = 0;
-     sendSpiLED(i + 1, led_data[i]);
-   }
-   firstRun = FALSE;
+      if(firstRun == TRUE)
+      {
+        for(i = 0; i < 8; i++)
+        {
+          led_data[i] = 0;
+          sendSpiLED(i + 1, led_data[i]);
+        }
+        firstRun = FALSE;
       }
-      for (i = 0; i < 8; i++) {
-   if (data & (1 << i))
-     led_data[i] |= 1 << column;
-   else
-     led_data[i] &= ~(1 << column);
-   
-   sendSpiLED(i + 1, led_data[i]);
+      for(i = 0; i < 8; i++)
+      {
+        if(data & (1 << i))
+          led_data[i] |= 1 << column;
+        else
+          led_data[i] &= ~(1 << column);
+        
+        sendSpiLED(i + 1, led_data[i]);
       }
     }
     else if(!strcmp(ch, lr)) // led_row
@@ -180,12 +186,14 @@ void receiveOscMsgs(void)
       ch = strtok(0, space);
       data = atoi(ch);
       
-      if (firstRun == TRUE) {
-   for (i = 0; i < 8; i++) {
-     led_data[i] = 0;
-     sendSpiLED(i + 1, led_data[i]);
-   }
-   firstRun = FALSE;
+      if(firstRun == TRUE)
+      {
+        for(i = 0; i < 8; i++)
+        {
+          led_data[i] = 0;
+          sendSpiLED(i + 1, led_data[i]);
+        }
+        firstRun = FALSE;
       }
       led_data[row] = data;
       sendSpiLED(row + 1, led_data[row]);
@@ -198,16 +206,16 @@ void receiveOscMsgs(void)
       ch = strtok(0, space);
       state = atoi(ch);
       if(state)
-   enableAdc(pin);
+        enableAdc(pin);
       else
-   disableAdc(pin);
+        disableAdc(pin);
     }
     else if(!strcmp(ch, it)) // intensity
     {
-      int value;
       ch = strtok(0, space);
-      value = atoi(ch);
-      sendSpiLED(10, value);
+      para.intensity = atoi(ch);
+      sendSpiLED(0x0A, para.intensity);
+      putParaToEeprom(&para, sizeof(para), 0);
     }
     else if(!strcmp(ch, t)) // test
     {
@@ -265,9 +273,9 @@ short buttonCheck(int row, int index)
     if(btnDebounceCount[row][index] < 32 && ++btnDebounceCount[row][index] == 32)
     {
       if(btnCurrent[row] & (1 << index))
-   btnState[row] |= (1 << index);
+        btnState[row] |= (1 << index);
       else
-   btnState[row] &= ~(1 << index);
+        btnState[row] &= ~(1 << index);
       flag = TRUE;
     }
   }
@@ -298,15 +306,15 @@ void sendOscMsgPress(void)
       k = input(SR_QH);
       k = (k == 0);
       if(k)
-   btnCurrent[i] |= (1 << j);
+        btnCurrent[i] |= (1 << j);
       else
-   btnCurrent[i] &= ~(1 << j);
+        btnCurrent[i] &= ~(1 << j);
       
       if(buttonCheck(i, j))
       {
-   //sy printf(usb_cdc_putc, "press %d %d %d", j, i, ((btnState[i] & (1 << j)) ? kButtonDownEvent : kButtonUpEvent));
-   printf(usb_cdc_putc, "press %d %d %d", j, i, ((btnState[i] & (1 << j)) ? 1 : 0));
-   usb_cdc_putc(0x0D);
+        //sy printf(usb_cdc_putc, "press %d %d %d", j, i, ((btnState[i] & (1 << j)) ? kButtonDownEvent : kButtonUpEvent));
+        printf(usb_cdc_putc, "press %d %d %d", j, i, ((btnState[i] & (1 << j)) ? 1 : 0));
+        usb_cdc_putc(0x0D);
       }
       output_bit(SR_CLK2, 1);
       output_bit(SR_CLK2, 0);
@@ -351,23 +359,48 @@ void sendOscMsgAdc(int count, int loop)
     {
       if((gAdcEnableState & (1 << loop)) == (1 << loop))
       {
-   float fvalue = 0.0;
-   for(i = 0; i < 8; i++)
-   {
-     set_adc_channel(adc_id[loop]);
-     fvalue += read_adc(ADC_START_AND_READ);
-   }
-   fvalue = (fvalue / 8.0) / 1024.0;
+        float fvalue = 0.0;
+        for(i = 0; i < 8; i++)
+        {
+          set_adc_channel(adc_id[loop]);
+          fvalue += read_adc(ADC_START_AND_READ);
+        }
+        fvalue = (fvalue / 8.0) / 1024.0;
    
-   printf(usb_cdc_putc, "adc %d %f", loop, fvalue);
-   usb_cdc_putc(0x0D);
+        printf(usb_cdc_putc, "adc %d %f", loop, fvalue);
+        usb_cdc_putc(0x0D);
       }
       loop++;
       if(loop >= kAdcFilterNumAdcs)
-   loop = 0;
+        loop = 0;
 
       count = 0;
     }
     count++;
   }
+}
+
+/***********************************/
+/*                                 */
+/*      Functions for EEPROM       */
+/*                                 */
+/***********************************/
+void initAndSaveParaToEeprom(void)
+{
+  para.intensity = 0x0F;
+  putParaToEeprom(&para, sizeof(para), 0);
+}
+
+void getParaFromEeprom(int *ptr, int num, int addr)
+{
+  int count;
+  for(count = 0; count < num; count++)
+    ptr[count] = read_eeprom(addr + count);
+}
+
+void putParaToEeprom(int *ptr,int num,int addr)
+{
+  int count;
+  for(count = 0; count < num; count++)
+    write_eeprom(addr + count, ptr[count]);
 }

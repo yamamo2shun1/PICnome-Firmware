@@ -116,3 +116,12 @@ void enableAdc(int port);
 void disableAdc(int port);
 //sy void sendOscMsgAdc(void);
 void sendOscMsgAdc(int count, int loop);
+
+//EEPROM
+struct{
+  int intensity;
+}para;
+
+void initAndSaveParaToEeprom(void);
+void getParaFromEeprom(int *ptr, int num, int addr);
+void putParaToEeprom(int *ptr, int num, int addr);
