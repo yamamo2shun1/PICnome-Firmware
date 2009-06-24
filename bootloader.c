@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * bootloader.c,v.0.91 2009/06/18
+ * bootloader.c,v.1.0 2009/06/24
  */
 
 #include <18F2550.h>
