@@ -38,10 +38,11 @@ void main()
   setup_timer_1(T1_DISABLED);
   //sy setup_timer_2(T2_DISABLED,0,1);
   setup_timer_2(T2_DIV_BY_1, 255, 1);// for PWM
-  set_pwm1_duty(0);
   setup_timer_3(T3_DISABLED|T3_DIV_BY_1);
   setup_comparator(NC_NC_NC_NC);
   setup_vref(FALSE);
+  setup_ccp1(CCP_PWM);
+  set_pwm1_duty(0);
   //Setup_Oscillator parameter not selected from Intr Oscillator Config tab
 
   //Parameters Initialized
