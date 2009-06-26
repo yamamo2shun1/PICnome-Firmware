@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.h,v.0.91 2009/06/24
+ * picnome.h,v.0.92 2009/06/26
  */
 
 #include <18F2550.h>
@@ -84,6 +84,7 @@ char l[]  = "led";
 char lc[] = "led_col";
 char lr[] = "led_row";
 char ae[] = "adc_enable";
+char p[]  = "pwm";
 char it[] = "intensity";
 char t[]  = "test";
 char s[]  = "shutdown";

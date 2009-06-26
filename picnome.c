@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.0.91 2009/06/24
+ * picnome.c,v.0.92 2009/06/26
  */
 
 #include "picnome.h"
@@ -36,7 +36,9 @@ void main()
   setup_wdt(WDT_OFF);
   setup_timer_0(RTCC_INTERNAL);
   setup_timer_1(T1_DISABLED);
-  setup_timer_2(T2_DISABLED,0,1);
+  //sy setup_timer_2(T2_DISABLED,0,1);
+  setup_timer_2(T2_DIV_BY_1, 255, 1);// for PWM
+  set_pwm1_duty(0);
   setup_timer_3(T3_DISABLED|T3_DIV_BY_1);
   setup_comparator(NC_NC_NC_NC);
   setup_vref(FALSE);
@@ -209,6 +211,24 @@ void receiveOscMsgs(void)
         enableAdc(pin);
       else
         disableAdc(pin);
+    }
+    else if(!strcmp(ch, p)) // pwm
+    {
+      int prescale, period;
+      float duty;
+      ch = strtok(0, space);
+      prescale = atoi(ch);
+      ch = strtok(0, space);
+      period = atoi(ch);
+      ch = strtok(0, space);
+      duty = atof(ch);
+      if(prescale == 1)
+        setup_timer_2(T2_DIV_BY_1, period, 1);
+      else if(prescale == 4)
+        setup_timer_2(T2_DIV_BY_4, period, 1);
+      else if(prescale == 16)
+        setup_timer_2(T2_DIV_BY_16, period, 1);
+      set_pwm1_duty((long)(1024.0 * duty));
     }
     else if(!strcmp(ch, it)) // intensity
     {
