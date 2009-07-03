@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.h,v.0.92 2009/06/26
+ * picnome.h,v.0.93 2009/07/03
  */
 
 #include <18F2550.h>
@@ -79,16 +79,16 @@ int led_data[8];
 int firstRun = TRUE;
 
 char space[] = " ";
-char l[]   = "led";
-char lc[]  = "led_col";
-char lr[]  = "led_row";
-char ae[]  = "adc_enable";
-char p[]   = "pwm";
-char out[] = "output";
-char it[]  = "intensity";
-char t[]   = "test";
-char s[]   = "shutdown";
-char r[]   = "report";
+char l[]  = "led";
+char lc[] = "led_col";
+char lr[] = "led_row";
+char ae[] = "adc_enable";
+char p[]  = "pwm";
+//sy char o[]  = "output";
+char it[] = "intensity";
+char t[]  = "test";
+char s[]  = "shutdown";
+char r[]  = "report";
 
 void receiveOscMsgs(void);
 
@@ -112,6 +112,13 @@ int countAdc = 0, loopAdc = 0;
 void enableAdc(int port);
 void disableAdc(int port);
 void sendOscMsgAdc(void);
+
+//Digital Input Settings
+int inCurrent, inLast, inState, inDebounceCount[2];
+
+void inputInit(void);
+short inputCheck(int index);
+void sendOscMsgInput(void);
 
 //EEPROM
 struct{

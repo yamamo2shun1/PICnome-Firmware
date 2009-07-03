@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.0.92 2009/06/26
+ * picnome.c,v.0.93 2009/07/03
  */
 
 #include "picnome.h"
@@ -28,16 +28,13 @@
 void main()
 {
   int i;
-  //sy int countAdc = 0, loopAdc = 0;
 
-  //sy setup_adc_ports(ALL_ANALOG | VSS_VDD);
   setup_adc_ports(AN0_TO_AN9 || VSS_VDD);
   setup_adc(ADC_CLOCK_DIV_64);
   setup_spi(SPI_MASTER | SPI_L_TO_H | SPI_XMIT_L_TO_H | SPI_CLK_DIV_16);
   setup_wdt(WDT_OFF);
   setup_timer_0(RTCC_INTERNAL);
   setup_timer_1(T1_DISABLED);
-  //sy setup_timer_2(T2_DISABLED,0,1);
   setup_timer_2(T2_DIV_BY_1, 255, 1);// for PWM
   setup_timer_3(T3_DISABLED|T3_DIV_BY_1);
   setup_comparator(NC_NC_NC_NC);
@@ -62,6 +59,9 @@ void main()
     output_bit(SR_CLK, 0);
   }
 
+  //Input Initialized
+  inputInit();
+
   //Max7219 Initialized
   initLedDriver();
 
@@ -79,6 +79,9 @@ void main()
 
       //Button Handling
       sendOscMsgPress();
+
+      //Digital Input Handling
+      sendOscMsgInput();
 
       //Adc Handling
       sendOscMsgAdc();
@@ -232,7 +235,8 @@ void receiveOscMsgs(void)
         setup_timer_2(T2_DIV_BY_16, period, 1);
       set_pwm1_duty((long)(1024.0 * duty));
     }
-    else if(!strcmp(ch, out)) // output
+/*sy
+    else if(!strcmp(ch, o)) // output
     {
       int pin, state;
       ch = strtok(0, space);
@@ -244,6 +248,7 @@ void receiveOscMsgs(void)
       else if(pin == 1)
         output_bit(PIN_B0, state);
     }
+*/
     else if(!strcmp(ch, it)) // intensity
     {
       ch = strtok(0, space);
@@ -346,7 +351,6 @@ void sendOscMsgPress(void)
       
       if(buttonCheck(i, j))
       {
-        //sy printf(usb_cdc_putc, "press %d %d %d", j, i, ((btnState[i] & (1 << j)) ? kButtonDownEvent : kButtonUpEvent));
         printf(usb_cdc_putc, "press %d %d %d", j, i, ((btnState[i] & (1 << j)) ? 1 : 0));
         usb_cdc_putc(0x0D);
       }
@@ -366,7 +370,7 @@ void enableAdc(int port)
   if(port >= kAdcFilterNumAdcs)
     return;
 
-  if((gAdcEnableState & 0x0F) == 0)
+  if((gAdcEnableState & 0x7F) == 0)
     enableAdcFlag = TRUE;
 
   gAdcEnableState |= (1 << port);
@@ -379,7 +383,7 @@ void disableAdc(int port)
 
   gAdcEnableState &= ~(1 << port);
 
-  if((gAdcEnableState & 0x0F) == 0)
+  if((gAdcEnableState & 0x7F) == 0)
     enableAdcFlag = FALSE;
 }
 
@@ -411,6 +415,69 @@ void sendOscMsgAdc(void)
       countAdc = 0;
     }
     countAdc++;
+  }
+}
+
+/**********************************/
+/*                                */
+/*  Functions for Input Handling  */
+/*                                */
+/**********************************/
+void inputInit(void)
+{
+  int i;
+
+  inCurrent = 0x00;
+  inLast    = 0x00;
+  inState   = 0x00;
+
+  for(i = 0; i < 2; i++)
+    inDebounceCount[i] = 0;
+}
+
+short inputCheck(int index)
+{
+  short flag = FALSE;
+
+  if(((inCurrent ^ inLast) & (1 << index)) && ((inCurrent ^ inState) & (1 << index)))
+    inDebounceCount[index] = 0;
+  else if (((inCurrent ^ inLast) & (1 << index)) == 0 && ((inCurrent ^ inState) & (1 << index)))
+  {
+    if(inDebounceCount[index] < 32 && ++inDebounceCount[index] == 32)
+    {
+      if(inCurrent & (1 << index))
+        inState |= (1 << index);
+      else
+        inState &= ~(1 << index);
+      flag = TRUE;
+    }
+  }
+  return flag;
+}
+
+void sendOscMsgInput(void)
+{
+  int j, k;
+
+  inLast = inCurrent;
+
+  for(j = 0; j < 2; j++)
+  {
+    if(j == 0)
+      k = input(PIN_B4);
+    else if(j == 1)
+      k = input(PIN_B0);
+    k = (k == 0);
+    if(k)
+      inCurrent |= (1 << j);
+    else
+      inCurrent &= ~(1 << j);
+      
+    if(inputCheck(j))
+    {
+      printf(usb_cdc_putc, "input %d %d", j, ((inState & (1 << j)) ? 1 : 0));
+      usb_cdc_putc(0x0D);
+    }
   }
 }
 
