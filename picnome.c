@@ -28,9 +28,10 @@
 void main()
 {
   int i;
-  int countAdc = 0, loopAdc = 0;
+  //sy int countAdc = 0, loopAdc = 0;
 
-  setup_adc_ports(ALL_ANALOG | VSS_VDD);
+  //sy setup_adc_ports(ALL_ANALOG | VSS_VDD);
+  setup_adc_ports(AN0_TO_AN9 || VSS_VDD);
   setup_adc(ADC_CLOCK_DIV_64);
   setup_spi(SPI_MASTER | SPI_L_TO_H | SPI_XMIT_L_TO_H | SPI_CLK_DIV_16);
   setup_wdt(WDT_OFF);
@@ -80,7 +81,7 @@ void main()
       sendOscMsgPress();
 
       //Adc Handling
-      sendOscMsgAdc(countAdc, loopAdc);
+      sendOscMsgAdc();
     }
   }
 }
@@ -231,6 +232,18 @@ void receiveOscMsgs(void)
         setup_timer_2(T2_DIV_BY_16, period, 1);
       set_pwm1_duty((long)(1024.0 * duty));
     }
+    else if(!strcmp(ch, out)) // output
+    {
+      int pin, state;
+      ch = strtok(0, space);
+      pin = atoi(ch);
+      ch = strtok(0, space);
+      state = atoi(ch);
+      if(pin == 0)
+        output_bit(PIN_B4, state);
+      else if(pin == 1)
+        output_bit(PIN_B0, state);
+    }
     else if(!strcmp(ch, it)) // intensity
     {
       ch = strtok(0, space);
@@ -370,34 +383,34 @@ void disableAdc(int port)
     enableAdcFlag = FALSE;
 }
 
-void sendOscMsgAdc(int count, int loop)
+void sendOscMsgAdc(void)
 {
   int i;
 
   if(enableAdcFlag)
   {
-    if(count >= 25)
+    if(countAdc >= 25)
     {
-      if((gAdcEnableState & (1 << loop)) == (1 << loop))
+      if((gAdcEnableState & (1 << loopAdc)) == (1 << loopAdc))
       {
         float fvalue = 0.0;
         for(i = 0; i < 8; i++)
         {
-          set_adc_channel(adc_id[loop]);
+          set_adc_channel(adc_id[loopAdc]);
           fvalue += read_adc(ADC_START_AND_READ);
         }
         fvalue = (fvalue / 8.0) / 1024.0;
-   
-        printf(usb_cdc_putc, "adc %d %f", loop, fvalue);
+
+        printf(usb_cdc_putc, "adc %d %f", loopAdc, fvalue);
         usb_cdc_putc(0x0D);
       }
-      loop++;
-      if(loop >= kAdcFilterNumAdcs)
-        loop = 0;
+      loopAdc++;
+      if(loopAdc >= kAdcFilterNumAdcs)
+        loopAdc = 0;
 
-      count = 0;
+      countAdc = 0;
     }
-    count++;
+    countAdc++;
   }
 }
 

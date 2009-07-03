@@ -55,7 +55,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-//sy #include <math.h>
 #include "usb_cdc.h"
 
 #include <usb_bootloader.h>
@@ -80,22 +79,20 @@ int led_data[8];
 int firstRun = TRUE;
 
 char space[] = " ";
-char l[]  = "led";
-char lc[] = "led_col";
-char lr[] = "led_row";
-char ae[] = "adc_enable";
-char p[]  = "pwm";
-char it[] = "intensity";
-char t[]  = "test";
-char s[]  = "shutdown";
-char r[]  = "report";
+char l[]   = "led";
+char lc[]  = "led_col";
+char lr[]  = "led_row";
+char ae[]  = "adc_enable";
+char p[]   = "pwm";
+char out[] = "output";
+char it[]  = "intensity";
+char t[]   = "test";
+char s[]   = "shutdown";
+char r[]   = "report";
 
 void receiveOscMsgs(void);
 
 //Button Settings
-//sy #define kButtonDownEvent 1
-//sy #define kButtonUpEvent   0
-
 int btnCurrent[8], btnLast[8], btnState[8], btnDebounceCount[8][8];
 
 void buttonInit(void);
@@ -104,19 +101,17 @@ void sendOscMsgPress(void);
 
 
 //A/D Conversion Settings
-#define kAdcFilterNumAdcs 9
+#define kAdcFilterNumAdcs 7
 
-const int adc_id[] = {0, 1, 2, 3, 4, 8, 9, 11, 12};
+const int adc_id[] = {0, 1, 2, 3, 4, 8, 9};
 
-int gAdcEnableState = 0;//sy , loopAdc = 0;
+int gAdcEnableState = 0;
 short enableAdcFlag = FALSE;
-//sy long countAdc = 0;
-//sy float fvalue = 0.0;
+int countAdc = 0, loopAdc = 0;
 
 void enableAdc(int port);
 void disableAdc(int port);
-//sy void sendOscMsgAdc(void);
-void sendOscMsgAdc(int count, int loop);
+void sendOscMsgAdc(void);
 
 //EEPROM
 struct{
