@@ -57,6 +57,7 @@
 */
 #define _bootloader
 #include <usb_bootloader.h>
+//sy #include "usb_bootloader.h"
 
 #define LOADER_ISR 0x28
 #build(interrupt=LOADER_ISR)

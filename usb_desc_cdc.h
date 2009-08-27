@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * usb_desc_cdc.h,v.0.93 2009/07/03
+ * usb_desc_cdc.h,v.1.0 2009/08/27
  */
 
 #IFNDEF __USB_DESCRIPTORS__
@@ -92,9 +92,9 @@
    //endpoint descriptor
          USB_DESC_ENDPOINT_LEN, //length of descriptor                   ==37
          USB_DESC_ENDPOINT_TYPE, //constant ENDPOINT (ENDPOINT 0x05)          ==38
-         USB_CDC_COMM_IN_ENDPOINT | 0x80, //endpoint number and direction
+         1 | 0x80,//sy USB_CDC_COMM_IN_ENDPOINT | 0x80, //endpoint number and direction
          0x03, //transfer type supported (0x03 is interrupt)         ==40
-         USB_CDC_COMM_IN_SIZE,0x00, //maximum packet size supported                  ==41,42
+         8,0x00,//sy USB_CDC_COMM_IN_SIZE,0x00, //maximum packet size supported                  ==41,42
          250,  //polling interval, in ms.  (cant be smaller than 10)      ==43
 
    //interface descriptor 1 (data class interface)
@@ -111,19 +111,19 @@
    //endpoint descriptor
          USB_DESC_ENDPOINT_LEN, //length of descriptor                   ==60
          USB_DESC_ENDPOINT_TYPE, //constant ENDPOINT (ENDPOINT 0x05)          ==61
-         USB_CDC_DATA_OUT_ENDPOINT, //endpoint number and direction (0x02 = EP2 OUT)       ==62
+         2,//sy USB_CDC_DATA_OUT_ENDPOINT, //endpoint number and direction (0x02 = EP2 OUT)       ==62
          0x02, //transfer type supported (0x02 is bulk)         ==63
 //         make8(USB_CDC_DATA_OUT_SIZE,0),make8(USB_CDC_DATA_OUT_SIZE,1), //maximum packet size supported                  ==64, 65
-         USB_CDC_DATA_OUT_SIZE & 0xFF, (USB_CDC_DATA_OUT_SIZE >> 8) & 0xFF, //maximum packet size supported                  ==64, 65
+         64 & 0xFF, (64 >> 8) & 0xFF,//sy USB_CDC_DATA_OUT_SIZE & 0xFF, (USB_CDC_DATA_OUT_SIZE >> 8) & 0xFF, //maximum packet size supported                  ==64, 65
          250,  //polling interval, in ms.  (cant be smaller than 10)      ==66
 
    //endpoint descriptor
          USB_DESC_ENDPOINT_LEN, //length of descriptor                   ==53
          USB_DESC_ENDPOINT_TYPE, //constant ENDPOINT (ENDPOINT 0x05)          ==54
-         USB_CDC_DATA_IN_ENDPOINT | 0x80, //endpoint number and direction (0x82 = EP2 IN)       ==55
+         2 | 0x80,//sy USB_CDC_DATA_IN_ENDPOINT | 0x80, //endpoint number and direction (0x82 = EP2 IN)       ==55
          0x02, //transfer type supported (0x02 is bulk)         ==56
 //         make8(USB_CDC_DATA_IN_SIZE,0),make8(USB_CDC_DATA_IN_SIZE,1), //maximum packet size supported                  ==57, 58
-         USB_CDC_DATA_IN_SIZE & 0xFF, (USB_CDC_DATA_IN_SIZE >> 8) & 0xFF, //maximum packet size supported                  ==64, 65
+         64 & 0xFF, (64 >> 8) & 0xFF,//sy USB_CDC_DATA_IN_SIZE & 0xFF, (USB_CDC_DATA_IN_SIZE >> 8) & 0xFF, //maximum packet size supported                  ==64, 65
          250,  //polling interval, in ms.  (cant be smaller than 10)      ==59
    };
 
@@ -195,7 +195,7 @@
 //////////////////////////////////////////////////////////////////
 
 //the offset of the starting location of each string.  offset[0] is the start of string 0, offset[1] is the start of string 1, etc.
-char USB_STRING_DESC_OFFSET[]={0,4,12};
+char USB_STRING_DESC_OFFSET[]={0,4,22};
 
 char const USB_STRING_DESC[]={
    //string 0
@@ -203,7 +203,7 @@ char const USB_STRING_DESC[]={
          USB_DESC_STRING_TYPE, //descriptor type 0x03 (STRING)
          0x09,0x04,   //Microsoft Defined for US-English
    //string 1
-         16, //length of string index
+         18, //length of string index
          USB_DESC_STRING_TYPE, //descriptor type 0x03 (STRING)
          't',0,
          'k',0,
@@ -214,17 +214,8 @@ char const USB_STRING_DESC[]={
          'k',0,
          's',0,
    //string 2
-         32, //length of string index
+         16, //length of string index
          USB_DESC_STRING_TYPE, //descriptor type 0x03 (STRING)
-         't',0,
-         'k',0,
-         'r',0,
-         'w',0,
-         'o',0,
-         'r',0,
-         'k',0,
-         's',0,
-         ' ',0,
          'P',0,
          'I',0,
          'C',0,

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.h,v.0.93 2009/07/03
+ * picnome.h,v.1.0 2009/08/27
  */
 
 #include <18F2550.h>
@@ -54,10 +54,12 @@
 #USE DELAY(CLOCK=48MHZ, CRYSTAL=20MHZ)
 
 #include <stdlib.h>
-#include <string.h>
-#include "usb_cdc.h"
 
 #include <usb_bootloader.h>
+
+#include <pic18_usb.h>
+#include "usb_desc_cdc.h"
+#include <usb_cdc.h>
 
 //TC74HC164 Setting
 #define SR_CLK PIN_B6
