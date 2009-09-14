@@ -57,9 +57,7 @@
 
 #include <usb_bootloader.h>
 
-#include <pic18_usb.h>
-#include "usb_desc_cdc.h"
-#include <usb_cdc.h>
+#include "usb_cdc.h"
 
 //TC74HC164 Setting
 #define SR_CLK PIN_B6

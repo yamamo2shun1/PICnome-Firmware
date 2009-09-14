@@ -92,9 +92,9 @@
    //endpoint descriptor
          USB_DESC_ENDPOINT_LEN, //length of descriptor                   ==37
          USB_DESC_ENDPOINT_TYPE, //constant ENDPOINT (ENDPOINT 0x05)          ==38
-         1 | 0x80,//sy USB_CDC_COMM_IN_ENDPOINT | 0x80, //endpoint number and direction
+         USB_CDC_COMM_IN_ENDPOINT | 0x80, //endpoint number and direction
          0x03, //transfer type supported (0x03 is interrupt)         ==40
-         8,0x00,//sy USB_CDC_COMM_IN_SIZE,0x00, //maximum packet size supported                  ==41,42
+         USB_CDC_COMM_IN_SIZE,0x00, //maximum packet size supported                  ==41,42
          250,  //polling interval, in ms.  (cant be smaller than 10)      ==43
 
    //interface descriptor 1 (data class interface)
@@ -111,23 +111,23 @@
    //endpoint descriptor
          USB_DESC_ENDPOINT_LEN, //length of descriptor                   ==60
          USB_DESC_ENDPOINT_TYPE, //constant ENDPOINT (ENDPOINT 0x05)          ==61
-         2,//sy USB_CDC_DATA_OUT_ENDPOINT, //endpoint number and direction (0x02 = EP2 OUT)       ==62
+         USB_CDC_DATA_OUT_ENDPOINT, //endpoint number and direction (0x02 = EP2 OUT)       ==62
          0x02, //transfer type supported (0x02 is bulk)         ==63
 //         make8(USB_CDC_DATA_OUT_SIZE,0),make8(USB_CDC_DATA_OUT_SIZE,1), //maximum packet size supported                  ==64, 65
-         64 & 0xFF, (64 >> 8) & 0xFF,//sy USB_CDC_DATA_OUT_SIZE & 0xFF, (USB_CDC_DATA_OUT_SIZE >> 8) & 0xFF, //maximum packet size supported                  ==64, 65
+         USB_CDC_DATA_OUT_SIZE & 0xFF, (USB_CDC_DATA_OUT_SIZE >> 8) & 0xFF, //maximum packet size supported                  ==64, 65
          250,  //polling interval, in ms.  (cant be smaller than 10)      ==66
 
    //endpoint descriptor
          USB_DESC_ENDPOINT_LEN, //length of descriptor                   ==53
          USB_DESC_ENDPOINT_TYPE, //constant ENDPOINT (ENDPOINT 0x05)          ==54
-         2 | 0x80,//sy USB_CDC_DATA_IN_ENDPOINT | 0x80, //endpoint number and direction (0x82 = EP2 IN)       ==55
+         USB_CDC_DATA_IN_ENDPOINT | 0x80, //endpoint number and direction (0x82 = EP2 IN)       ==55
          0x02, //transfer type supported (0x02 is bulk)         ==56
 //         make8(USB_CDC_DATA_IN_SIZE,0),make8(USB_CDC_DATA_IN_SIZE,1), //maximum packet size supported                  ==57, 58
-         64 & 0xFF, (64 >> 8) & 0xFF,//sy USB_CDC_DATA_IN_SIZE & 0xFF, (USB_CDC_DATA_IN_SIZE >> 8) & 0xFF, //maximum packet size supported                  ==64, 65
+         USB_CDC_DATA_IN_SIZE & 0xFF, (USB_CDC_DATA_IN_SIZE >> 8) & 0xFF, //maximum packet size supported                  ==64, 65
          250,  //polling interval, in ms.  (cant be smaller than 10)      ==59
    };
 
-   //****** BEGIN CONFIG DESCRIPTOR LOOKUP TABLES ********
+   /****** BEGIN CONFIG DESCRIPTOR LOOKUP TABLES ********/
    //since we can't make pointers to constants in certain pic16s, this is an offset table to find
    //  a specific descriptor in the above table.
 
@@ -143,7 +143,7 @@
    //second dimension specifies which interface
    //last dimension specifies which class in this interface to get, but most will only have 1 class per interface
    //if a class descriptor is not valid, set the value to 0xFFFF
-   const int16 USB_CLASS_DESCRIPTORS[USB_NUM_CONFIGURATIONS][USB_MAX_NUM_INTERFACES][4]=
+   const int16 USB_CLASS_DESCRIPTORS[1/*USB_NUM_CONFIGURATIONS*/][USB_MAX_NUM_INTERFACES][4]=
    {
    //config 1
       //interface 0
@@ -225,4 +225,4 @@ char const USB_STRING_DESC[]={
          'e',0,
 };
 
-#ENDIF
+//sy #ENDIF
