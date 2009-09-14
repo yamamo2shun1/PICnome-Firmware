@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.h,v.1.0 2009/08/27
+ * picnome.h,v.1.01 2009/09/14
  */
 
 #include <18F2550.h>
