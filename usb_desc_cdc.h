@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * usb_desc_cdc.h,v.1.01 2009/09/14
+ * usb_desc_cdc.h,v.1.10 2009/10/5
  */
 
 #IFNDEF __USB_DESCRIPTORS__
@@ -214,7 +214,7 @@ char const USB_STRING_DESC[]={
          'k',0,
          's',0,
    //string 2
-         16, //length of string index
+         22, //length of string index
          USB_DESC_STRING_TYPE, //descriptor type 0x03 (STRING)
          'P',0,
          'I',0,
@@ -223,6 +223,11 @@ char const USB_STRING_DESC[]={
          'o',0,
          'm',0,
          'e',0,
+#ifdef ONE_TWENTY_EIGHT
+         '1',0,
+         '2',0,
+         '8',0,
+#endif
 };
 
 //sy #ENDIF

@@ -16,8 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.h,v.1.01 2009/09/14
+ * picnome.h,v.1.10 2009/10/5
  */
+
+#define ONE_TWENTY_EIGHT
 
 #include <18F2550.h>
 #device adc=10
@@ -69,13 +71,25 @@
 #define SR_QH   PIN_C6
 
 //MAX7219CNG Setting
+#if 1//sy
 #define LDD_LOAD PIN_B5
+#else//sy
+#define LDD_LOAD PIN_C2
+#endif//sy
 
 void initLedDriver(void);
+#ifndef ONE_TWENTY_EIGHT//for sixty four
 void sendSpiLED(int msb, int lsb);
+#else//for one twenty eight
+void sendSpiLED(int id, int msb, int lsb);
+#endif//sy
 
 //OSC Messages Receive Setting
+#ifndef ONE_TWENTY_EIGHT//for sixty four
 int led_data[8];
+#else//for one twenty eight
+long led_data[8];
+#endif//sy
 int firstRun = TRUE;
 
 char space[] = " ";
@@ -93,7 +107,11 @@ char r[]  = "report";
 void receiveOscMsgs(void);
 
 //Button Settings
+#ifndef ONE_TWENTY_EIGHT//for sixty four
 int btnCurrent[8], btnLast[8], btnState[8], btnDebounceCount[8][8];
+#else//for one twenty eight
+long btnCurrent[8], btnLast[8], btnState[8], btnDebounceCount[8][16];
+#endif//sy
 
 void buttonInit(void);
 short buttonCheck(int row, int index);
