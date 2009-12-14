@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.h,v.1.10 2009/10/5
+ * picnome.h,v.1.13 2009/12/14
  */
 
 #define ONE_TWENTY_EIGHT
@@ -84,6 +84,13 @@ void sendSpiLED(int msb, int lsb);
 void sendSpiLED(int id, int msb, int lsb);
 #endif//sy
 
+int i, j, k;
+char *ch;
+short flag;
+
+int x, y, state;
+float fvalue;
+
 //OSC Messages Receive Setting
 #ifndef ONE_TWENTY_EIGHT//for sixty four
 int led_data[8];
@@ -92,6 +99,7 @@ long led_data[8];
 #endif//sy
 int firstRun = TRUE;
 
+char string[20];
 char space[] = " ";
 char l[]  = "led";
 char lc[] = "led_col";
@@ -107,6 +115,7 @@ char r[]  = "report";
 void receiveOscMsgs(void);
 
 //Button Settings
+int start_row = 0;
 #ifndef ONE_TWENTY_EIGHT//for sixty four
 int btnCurrent[8], btnLast[8], btnState[8], btnDebounceCount[8][8];
 #else//for one twenty eight

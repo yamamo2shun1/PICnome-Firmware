@@ -175,7 +175,11 @@
          0x00, //protocol code ==6
          USB_MAX_EP0_PACKET_LENGTH, //max packet size for endpoint 0. (SLOW SPEED SPECIFIES 8) ==7
          0xD8,0x04, //vendor id (0x04D8 is Microchip, or is it 0x0461 ??)  ==8,9
+#ifndef ONE_TWENTY_EIGHT
          0xC5,0xFF, //product id   ==10,11
+#else
+         0x00,0xFD, //product id   ==10,11
+#endif
          0x02,0x00, //device release number  ==12,13
          0x01, //index of string description of manufacturer. therefore we point to string_1 array (see below)  ==14
          0x02, //index of string descriptor of the product  ==15
@@ -214,7 +218,11 @@ char const USB_STRING_DESC[]={
          'k',0,
          's',0,
    //string 2
+#ifndef ONE_TWENTY_EIGHT
+         16, //length of string index
+#else
          22, //length of string index
+#endif
          USB_DESC_STRING_TYPE, //descriptor type 0x03 (STRING)
          'P',0,
          'I',0,

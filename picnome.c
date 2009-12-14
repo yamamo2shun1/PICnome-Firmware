@@ -20,15 +20,13 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.1.10 2009/10/5
+ * picnome.c,v.1.13 2009/12/14
  */
 
 #include "picnome.h"
 
 void main()
 {
-  int i;
-
   setup_adc_ports(AN0_TO_AN9 || VSS_VDD);
   setup_adc(ADC_CLOCK_DIV_64);
   setup_spi(SPI_MASTER | SPI_L_TO_H | SPI_XMIT_L_TO_H | SPI_CLK_DIV_16);
@@ -73,8 +71,8 @@ void main()
   while(TRUE)
   {
     usb_task();
-    if(usb_enumerated())
-    {
+    //test if(usb_enumerated())
+    //test {
       receiveOscMsgs();
 
       //Button Handling
@@ -85,7 +83,7 @@ void main()
 
       //Adc Handling
       sendOscMsgAdc();
-    }
+    //test }
   }
 }
 
@@ -97,8 +95,6 @@ void main()
 #ifndef ONE_TWENTY_EIGHT//for sixty four
 void initLedDriver(void)
 {
-  int i;
-
   sendSpiLED(0x0B, 0x07);           // Scan Limit full range
 
   sendSpiLED(0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
@@ -132,8 +128,6 @@ void sendSpiLED(int msb, int lsb)
 #else//for one twenty eight
 void initLedDriver(void)
 {
-  int i;
-
   sendSpiLED(0, 0x0B, 0x07);           // Scan Limit full range
   sendSpiLED(1, 0x0B, 0x07);           // Scan Limit full range
 
@@ -179,6 +173,7 @@ void sendSpiLED(int id, int msb, int lsb)
     spi_write(msb);
     spi_write(lsb);
     output_bit(LDD_LOAD, 1);
+    delay_us(5);
   }
   else if(id == 1)
   {
@@ -188,6 +183,7 @@ void sendSpiLED(int id, int msb, int lsb)
     spi_write(0x00);
     spi_write(0x00);
     output_bit(LDD_LOAD, 1);
+    delay_us(5);
   }
 }
 #endif//sy
@@ -199,20 +195,15 @@ void sendSpiLED(int id, int msb, int lsb)
 /***********************************/
 void receiveOscMsgs(void)
 {
-  int i;
-
   if(usb_cdc_kbhit())
   {
-    char string[20];
-    char *ch;
-
     get_string_usb(string, 20);
 
     ch = strtok(string, space);
 
     if(!strcmp(ch, l)) // led
     {
-      int x, y, state;
+      //test int x, y, state;
       ch = strtok(0, space);
       x = atoi(ch);
       ch = strtok(0, space);
@@ -220,10 +211,10 @@ void receiveOscMsgs(void)
       ch = strtok(0, space);
       state = atoi(ch);
 #ifndef ONE_TWENTY_EIGHT//for sixty four
-      if(state == 0)
-        led_data[y] &= ~(1 << x);
-      else
+      if(state)
         led_data[y] |= (1 << x);
+      else
+        led_data[y] &= ~(1 << x);
 
       sendSpiLED(y + 1, led_data[y]);
 #else//for one twenty eight
@@ -480,8 +471,6 @@ void receiveOscMsgs(void)
 /***********************************/
 void buttonInit(void)
 {
-  int i, j;
-
   for(i = 0; i < 8; i++)
   {
     btnCurrent[i] = 0x00;
@@ -499,14 +488,14 @@ void buttonInit(void)
 
 short buttonCheck(int row, int index)
 {
-  short flag = FALSE;
+  flag = FALSE;
 
 #ifndef ONE_TWENTY_EIGHT//for sixty four
   if(((btnCurrent[row] ^ btnLast[row]) & (1 << index)) && ((btnCurrent[row] ^ btnState[row]) & (1 << index)))
     btnDebounceCount[row][index] = 0;
   else if (((btnCurrent[row] ^ btnLast[row]) & (1 << index)) == 0 && ((btnCurrent[row] ^ btnState[row]) & (1 << index)))
   {
-    if(btnDebounceCount[row][index] < 32 && ++btnDebounceCount[row][index] == 32)
+    if(btnDebounceCount[row][index] < 6 && ++btnDebounceCount[row][index] == 6)
     {
       if(btnCurrent[row] & (1 << index))
         btnState[row] |= (1 << index);
@@ -521,6 +510,7 @@ short buttonCheck(int row, int index)
   else if (((btnCurrent[row] ^ btnLast[row]) & ((long)1 << index)) == 0 && ((btnCurrent[row] ^ btnState[row]) & ((long)1 << index)))
   {
     if(btnDebounceCount[row][index] < 8 && ++btnDebounceCount[row][index] == 8)
+    //sy if(btnDebounceCount[row][index] < 24 && ++btnDebounceCount[row][index] == 24)
     {
       if(btnCurrent[row] & ((long)1 << index))
         btnState[row] |= ((long)1 << index);
@@ -535,11 +525,10 @@ short buttonCheck(int row, int index)
 
 void sendOscMsgPress(void)
 {
-  int i, j, k;
+  if(start_row == 0)
+    output_bit(SR_A, 0);
 
-  output_bit(SR_A, 0);
-
-  for(i = 0; i < 8; i++)
+  for(i = start_row; i < start_row + 4; i++)
   {
     output_bit(SR_CLK, 1);
     output_bit(SR_CLK, 0);
@@ -558,25 +547,28 @@ void sendOscMsgPress(void)
     for(j = 0; j < 16; j++)
 #endif
     {
-      k = input(SR_QH);
-      k = (k == 0);
-      if(k)
-        btnCurrent[i] |= ((long)1 << j);
-      else
+      if(input(SR_QH))
         btnCurrent[i] &= ~((long)1 << j);
+      else
+        btnCurrent[i] |= ((long)1 << j);
       
       if(buttonCheck(i, j))
       {
+#ifdef ONE_TWENTY_EIGHT//for sixty four
         if(j < 8)
-          printf(usb_cdc_putc, "press %d %d %d", 7 - i, j, ((btnState[i] & ((long)1 << j)) ? 1 : 0));
+          printf(usb_cdc_putc, "press %d %d %d\r", 7 - i, j, ((btnState[i] & ((long)1 << j)) ? 1 : 0));
         else
-          printf(usb_cdc_putc, "press %d %d %d", j, i, ((btnState[i] & ((long)1 << j)) ? 1 : 0));
-        usb_cdc_putc(0x0D);
+#endif
+          printf(usb_cdc_putc, "press %d %d %d\r", j, i, ((btnState[i] & ((long)1 << j)) ? 1 : 0));
       }
       output_bit(SR_CLK2, 1);
       output_bit(SR_CLK2, 0);
     }
   }
+  if(start_row == 0)
+    start_row = 4;
+  else if(start_row == 4)
+    start_row = 0;
 }
 
 /***********************************/
@@ -608,15 +600,14 @@ void disableAdc(int port)
 
 void sendOscMsgAdc(void)
 {
-  int i;
-
   if(enableAdcFlag)
   {
     if(countAdc >= 25)
     {
       if((gAdcEnableState & (1 << loopAdc)) == (1 << loopAdc))
       {
-        float fvalue = 0.0;
+        //test float fvalue = 0.0;
+        fvalue = 0.0;
         for(i = 0; i < 8; i++)
         {
           set_adc_channel(adc_id[loopAdc]);
@@ -644,8 +635,6 @@ void sendOscMsgAdc(void)
 /**********************************/
 void inputInit(void)
 {
-  int i;
-
   inCurrent = 0x00;
   inLast    = 0x00;
   inState   = 0x00;
@@ -656,7 +645,7 @@ void inputInit(void)
 
 short inputCheck(int index)
 {
-  short flag = FALSE;
+  flag = FALSE;
 
   if(((inCurrent ^ inLast) & (1 << index)) && ((inCurrent ^ inState) & (1 << index)))
     inDebounceCount[index] = 0;
@@ -676,8 +665,6 @@ short inputCheck(int index)
 
 void sendOscMsgInput(void)
 {
-  int j, k;
-
   inLast = inCurrent;
 
   for(j = 0; j < 2; j++)
@@ -686,8 +673,8 @@ void sendOscMsgInput(void)
       k = input(PIN_B4);
     else if(j == 1)
       k = input(PIN_B0);
-    k = (k == 0);
-    if(k)
+    //test k = (k == 0);
+    if(k == 0)
       inCurrent |= (1 << j);
     else
       inCurrent &= ~(1 << j);

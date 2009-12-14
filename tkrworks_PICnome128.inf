@@ -11,7 +11,7 @@ LayoutFile=layout.inf
 %tkrworks%=tkrworks
 
 [tkrworks]
-%tkrworks_picnome%=Reader, USB\VID_04D8&PID_FFC5
+%tkrworks_picnome%=Reader, USB\VID_04D8&PID_FD00
 
 [Reader_Install.NTx86]
 ;Windows2000
