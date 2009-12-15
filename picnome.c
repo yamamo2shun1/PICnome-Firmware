@@ -495,7 +495,7 @@ short buttonCheck(int row, int index)
     btnDebounceCount[row][index] = 0;
   else if (((btnCurrent[row] ^ btnLast[row]) & (1 << index)) == 0 && ((btnCurrent[row] ^ btnState[row]) & (1 << index)))
   {
-    if(btnDebounceCount[row][index] < 6 && ++btnDebounceCount[row][index] == 6)
+    if(btnDebounceCount[row][index] < 4 && ++btnDebounceCount[row][index] == 4)
     {
       if(btnCurrent[row] & (1 << index))
         btnState[row] |= (1 << index);
@@ -509,8 +509,7 @@ short buttonCheck(int row, int index)
     btnDebounceCount[row][index] = 0;
   else if (((btnCurrent[row] ^ btnLast[row]) & ((long)1 << index)) == 0 && ((btnCurrent[row] ^ btnState[row]) & ((long)1 << index)))
   {
-    if(btnDebounceCount[row][index] < 8 && ++btnDebounceCount[row][index] == 8)
-    //sy if(btnDebounceCount[row][index] < 24 && ++btnDebounceCount[row][index] == 24)
+    if(btnDebounceCount[row][index] < 4 && ++btnDebounceCount[row][index] == 4)
     {
       if(btnCurrent[row] & ((long)1 << index))
         btnState[row] |= ((long)1 << index);
