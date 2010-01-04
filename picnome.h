@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.h,v.1.13 2009/12/14
+ * picnome.h,v.1.14 2010/01/04
  */
 
 //sy #define ONE_TWENTY_EIGHT
@@ -89,7 +89,6 @@ char *ch;
 short flag;
 
 int x, y, state;
-float fvalue;
 
 //OSC Messages Receive Setting
 #ifndef ONE_TWENTY_EIGHT//for sixty four
@@ -129,12 +128,15 @@ void sendOscMsgPress(void);
 
 //A/D Conversion Settings
 #define kAdcFilterNumAdcs 7
-
 const int adc_id[] = {0, 1, 2, 3, 4, 8, 9};
 
 int gAdcEnableState = 0;
 short enableAdcFlag = FALSE;
 int countAdc = 0, loopAdc = 0;
+float fvalue = 0.0;
+int countAve[7];
+float adc_total[7];
+float adc_value[7][8];
 
 void enableAdc(int port);
 void disableAdc(int port);

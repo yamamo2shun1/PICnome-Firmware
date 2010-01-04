@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.1.13 2009/12/14
+ * picnome.c,v.1.14 2010/01/04
  */
 
 #include "picnome.h"
@@ -42,6 +42,14 @@ void main()
   //Setup_Oscillator parameter not selected from Intr Oscillator Config tab
 
   //Parameters Initialized
+  for(i = 0; i < 7; i++)
+  {
+    countAve[i] = 0;
+    adc_total[i] = 0.0;
+    for(j = 0; j < 8; j++)
+      adc_value[i][j] = 0.0;
+  }
+
   getParaFromEeprom(&para, sizeof(para), 0);
   if(!(para.intensity > 0))
     initAndSaveParaToEeprom();
@@ -605,17 +613,16 @@ void sendOscMsgAdc(void)
     {
       if((gAdcEnableState & (1 << loopAdc)) == (1 << loopAdc))
       {
-        //test float fvalue = 0.0;
-        fvalue = 0.0;
-        for(i = 0; i < 8; i++)
-        {
-          set_adc_channel(adc_id[loopAdc]);
-          fvalue += read_adc(ADC_START_AND_READ);
-        }
-        fvalue = (fvalue / 8.0) / 1024.0;
+        set_adc_channel(adc_id[loopAdc]);
+        fvalue = read_adc(ADC_START_AND_READ) / 1024.0;
+        adc_total[loopAdc] += fvalue;
+        adc_total[loopAdc] -= adc_value[loopAdc][countAve[loopAdc]];
+        adc_value[loopAdc][countAve[loopAdc]] = fvalue;
+        countAve[loopAdc]++;
+        if(countAve[loopAdc] == 8)
+          countAve[loopAdc] = 0;
 
-        printf(usb_cdc_putc, "adc %d %f", loopAdc, fvalue);
-        usb_cdc_putc(0x0D);
+        printf(usb_cdc_putc, "adc %d %f\r", loopAdc, (adc_total[loopAdc] / 8.0));
       }
       loopAdc++;
       if(loopAdc >= kAdcFilterNumAdcs)
@@ -672,17 +679,14 @@ void sendOscMsgInput(void)
       k = input(PIN_B4);
     else if(j == 1)
       k = input(PIN_B0);
-    //test k = (k == 0);
+
     if(k == 0)
       inCurrent |= (1 << j);
     else
       inCurrent &= ~(1 << j);
       
     if(inputCheck(j))
-    {
-      printf(usb_cdc_putc, "input %d %d", j, ((inState & (1 << j)) ? 1 : 0));
-      usb_cdc_putc(0x0D);
-    }
+      printf(usb_cdc_putc, "input %d %d\r", j, ((inState & (1 << j)) ? 1 : 0));
   }
 }
 
