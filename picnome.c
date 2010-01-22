@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.1.14 2010/01/04
+ * picnome.c,v.1.15 2010/01/22
  */
 
 #include "picnome.h"
@@ -592,6 +592,7 @@ void enableAdc(int port)
     enableAdcFlag = TRUE;
 
   gAdcEnableState |= (1 << port);
+  enableAdcNum++;
 }
 
 void disableAdc(int port)
@@ -603,13 +604,14 @@ void disableAdc(int port)
 
   if((gAdcEnableState & 0x7F) == 0)
     enableAdcFlag = FALSE;
+  enableAdcNum--;
 }
 
 void sendOscMsgAdc(void)
 {
   if(enableAdcFlag)
   {
-    if(countAdc >= 25)
+    if(countAdc >= (8 * enableAdcNum))
     {
       if((gAdcEnableState & (1 << loopAdc)) == (1 << loopAdc))
       {
@@ -618,11 +620,13 @@ void sendOscMsgAdc(void)
         adc_total[loopAdc] += fvalue;
         adc_total[loopAdc] -= adc_value[loopAdc][countAve[loopAdc]];
         adc_value[loopAdc][countAve[loopAdc]] = fvalue;
+        fvalue = adc_total[loopAdc] / 8.0;
+
         countAve[loopAdc]++;
         if(countAve[loopAdc] == 8)
           countAve[loopAdc] = 0;
 
-        printf(usb_cdc_putc, "adc %d %f\r", loopAdc, (adc_total[loopAdc] / 8.0));
+        printf(usb_cdc_putc, "adc %d %f\r", loopAdc, fvalue);
       }
       loopAdc++;
       if(loopAdc >= kAdcFilterNumAdcs)

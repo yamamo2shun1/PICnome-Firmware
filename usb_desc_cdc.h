@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * usb_desc_cdc.h,v.1.14 2010/01/04
+ * usb_desc_cdc.h,v.1.15 2010/01/22
  */
 
 #IFNDEF __USB_DESCRIPTORS__
