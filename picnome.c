@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.1.15 2010/01/22
+ * picnome.c,v.1.0.17 2010/03/29
  */
 
 #include "picnome.h"
@@ -33,15 +33,16 @@ void main()
   setup_wdt(WDT_OFF);
   setup_timer_0(RTCC_INTERNAL);
   setup_timer_1(T1_DISABLED);
-  setup_timer_2(T2_DIV_BY_1, 255, 1);// for PWM
+  //sy setup_timer_2(T2_DIV_BY_1, 255, 1);// for PWM
+  setup_timer_2(T2_DISABLED, 255, 1);
   setup_timer_3(T3_DISABLED|T3_DIV_BY_1);
   setup_comparator(NC_NC_NC_NC);
   setup_vref(FALSE);
-  setup_ccp1(CCP_PWM);
-  set_pwm1_duty(0);
+  //sy setup_ccp1(CCP_PWM);
+  //sy set_pwm1_duty(0);
   //Setup_Oscillator parameter not selected from Intr Oscillator Config tab
 
-  //Parameters Initialized
+  // Parameters Initialized
   for(i = 0; i < 7; i++)
   {
     countAve[i] = 0;
@@ -54,7 +55,7 @@ void main()
   if(!(para.intensity > 0))
     initAndSaveParaToEeprom();
 
-  //Button Initialized
+  // Button Initialized
   buttonInit();
 
   output_bit(SR_A, 1);
@@ -65,13 +66,13 @@ void main()
     output_bit(SR_CLK, 0);
   }
 
-  //Input Initialized
+  // Input Initialized
   inputInit();
 
-  //Max7219 Initialized
+  // MAX7219 Initialized
   initLedDriver();
 
-  //USB CDC Class Initialized
+  // USB CDC Class Initialized
   usb_cdc_init();
   usb_init();
   while(!usb_cdc_connected()){}
@@ -79,19 +80,19 @@ void main()
   while(TRUE)
   {
     usb_task();
-    //test if(usb_enumerated())
-    //test {
+    if(usb_enumerated())
+    {
       receiveOscMsgs();
 
-      //Button Handling
+      // Button Handling
       sendOscMsgPress();
 
-      //Digital Input Handling
-      sendOscMsgInput();
+      // Digital Input Handling
+      //sy sendOscMsgInput();
 
-      //Adc Handling
+      // Adc Handling
       sendOscMsgAdc();
-    //test }
+    }
   }
 }
 
@@ -104,24 +105,17 @@ void main()
 void initLedDriver(void)
 {
   sendSpiLED(0x0B, 0x07);           // Scan Limit full range
-
   sendSpiLED(0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
-
   for(i = 1; i < 9; i++)
     sendSpiLED(i, i);               // print startup pattern 
-
   sendSpiLED(0x0C, 0x01);           // Shutdown Normal Operation
-
   sendSpiLED(0x0F, 0x00);           // Display Test Off
-
   for(i = 0; i < 64; i++)
   {
     sendSpiLED(0x0A, (64 - i) / 4);   // set to max intensity
     delay_ms(8);
   }
-
   sendSpiLED(0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
-
   for(i = 1; i < 9; i++)
     sendSpiLED(i, 0x00);
 }
@@ -132,45 +126,45 @@ void sendSpiLED(int msb, int lsb)
   spi_write(msb);
   spi_write(lsb);
   output_bit(LDD_LOAD, 1);
+  delay_us(5);
 }
 #else//for one twenty eight
 void initLedDriver(void)
 {
-  sendSpiLED(0, 0x0B, 0x07);           // Scan Limit full range
-  sendSpiLED(1, 0x0B, 0x07);           // Scan Limit full range
+  sendSpiLED2(0x0B, 0x07, 0, 0);      // Scan Limit full range
+  sendSpiLED2(0, 0, 0x0B, 0x07);      // Scan Limit full range
 
-  sendSpiLED(0, 0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
-  sendSpiLED(1, 0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED2(0, 0, 0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED2(0x0A, para.intensity, 0, 0); // Max Intensity 0x00[min] - 0x0F[max]
 
   for(i = 1; i < 9; i++)
   {
-    sendSpiLED(0, i, i);               // print startup pattern 
-    sendSpiLED(1, i, i);               // print startup pattern 
+    sendSpiLED2(i, i, 0, 0);               // print startup pattern 
   }
 
-  sendSpiLED(0, 0x0C, 0x01);           // Shutdown Normal Operation
-  sendSpiLED(1, 0x0C, 0x01);           // Shutdown Normal Operation
+  sendSpiLED2(0x0C, 0x01, 0, 0);           // Shutdown Normal Operation
+  sendSpiLED2(0, 0, 0x0C, 0x01);           // Shutdown Normal Operation
 
-  sendSpiLED(0, 0x0F, 0x00);           // Display Test Off
-  sendSpiLED(1, 0x0F, 0x00);           // Display Test Off
+  sendSpiLED2(0x0F, 0x00, 0, 0);           // Display Test Off
+  sendSpiLED2(0, 0, 0x0F, 0x00);           // Display Test Off
 
   for(i = 0; i < 64; i++)
   {
-    sendSpiLED(0, 0x0A, (64 - i) / 4);   // set to max intensity
-    sendSpiLED(1, 0x0A, (64 - i) / 4);   // set to max intensity
+    sendSpiLED2(0x0A, (64 - i) / 4, 0, 0);   // set to max intensity
+    sendSpiLED2(0, 0, 0x0A, (64 - i) / 4);   // set to max intensity
     delay_ms(8);
   }
 
-  sendSpiLED(0, 0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
-  sendSpiLED(1, 0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED2(0x0A, para.intensity, 0, 0); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED2(0, 0, 0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
 
   for(i = 1; i < 9; i++)
   {
-    sendSpiLED(0, i, 0x00);
-    sendSpiLED(1, i, 0x00);
+    sendSpiLED2(i, 0x00, i, 0x00);
   }
 }
 
+/*
 void sendSpiLED(int id, int msb, int lsb)
 {
   if(id == 0)
@@ -181,7 +175,7 @@ void sendSpiLED(int id, int msb, int lsb)
     spi_write(msb);
     spi_write(lsb);
     output_bit(LDD_LOAD, 1);
-    delay_us(5);
+    delay_us(1);
   }
   else if(id == 1)
   {
@@ -191,8 +185,20 @@ void sendSpiLED(int id, int msb, int lsb)
     spi_write(0x00);
     spi_write(0x00);
     output_bit(LDD_LOAD, 1);
-    delay_us(5);
+    delay_us(1);
   }
+}
+*/
+
+void sendSpiLED2(int msb0, int lsb0, int msb1, int lsb1)
+{
+  output_bit(LDD_LOAD, 0);
+  spi_write(msb1);
+  spi_write(lsb1);
+  spi_write(msb0);
+  spi_write(lsb0);
+  output_bit(LDD_LOAD, 1);
+  delay_us(5);
 }
 #endif//sy
 
@@ -205,19 +211,19 @@ void receiveOscMsgs(void)
 {
   if(usb_cdc_kbhit())
   {
-    get_string_usb(string, 20);
+    my_get_string_usb(string, 10);
 
-    ch = strtok(string, space);
-
-    if(!strcmp(ch, l)) // led
+    if(string[0] == 'l' && (string[1] == '0' || string[1] == '1')) // led
     {
-      //test int x, y, state;
-      ch = strtok(0, space);
-      x = atoi(ch);
-      ch = strtok(0, space);
-      y = atoi(ch);
-      ch = strtok(0, space);
-      state = atoi(ch);
+      x = my_atoi(string[2]);
+      y = my_atoi(string[3]);
+      state = my_atoi(string[1]);
+/*
+      if(string[0] == 'l')
+        state = 1;
+      else
+        state = 0;
+*/
 #ifndef ONE_TWENTY_EIGHT//for sixty four
       if(state)
         led_data[y] |= (1 << x);
@@ -228,7 +234,6 @@ void receiveOscMsgs(void)
 #else//for one twenty eight
       if(x < 8)
       {
-        int x1, y1;
         x1 = y;
         y1 = 7 - x;
         x = x1;
@@ -239,19 +244,16 @@ void receiveOscMsgs(void)
       else
         led_data[y] |= ((long)1 << x);
 
-      {
-        int lsb0, lsb1;
-        lsb0 = (int)(led_data[y] & 0x00FF);
-        sendSpiLED(0, y + 1, lsb0);
-        lsb1 = (int)((led_data[y] & 0xFF00) >> 8);
-        sendSpiLED(1, y + 1, lsb1);
-      }
+      lsb0 = (int)(led_data[y] & 0x00FF);
+      lsb1 = (int)((led_data[y] & 0xFF00) >> 8);
+      sendSpiLED2(y + 1, lsb0, y + 1, lsb1);
 #endif
     }
-    else if(!strcmp(ch, lc)) // led_col
+    else if(string[0] == 'l' && string[1] == 'c') // led_col
     {
 #ifndef ONE_TWENTY_EIGHT//for sixty four      
       int column, data;
+      ch = strtok(string, space);
       ch = strtok(0, space);
       column = atoi(ch);
       ch = strtok(0, space);
@@ -278,7 +280,7 @@ void receiveOscMsgs(void)
 #else//for one twenty eight
       int column, data;
       int column1, i1;
-      int lsb0, lsb1;
+      ch = strtok(string, space);
       ch = strtok(0, space);
       column = atoi(ch);
       ch = strtok(0, space);
@@ -290,9 +292,8 @@ void receiveOscMsgs(void)
         {
           led_data[i] = 0;
           lsb0 = (int)(led_data[i] & 0x00FF);
-          sendSpiLED(0, i + 1, lsb0);
           lsb1 = (int)((led_data[i] & 0xFF00) >> 8);
-          sendSpiLED(1, i + 1, lsb1);
+          sendSpiLED2(i + 1, lsb0, i + 1, lsb1);
         }
         firstRun = FALSE;
       }
@@ -314,16 +315,16 @@ void receiveOscMsgs(void)
           led_data[i1] &= ~((long)1 << column1);
         
         lsb0 = (int)(led_data[i1] & 0x00FF);
-        sendSpiLED(0, i1 + 1, lsb0);
         lsb1 = (int)((led_data[i1] & 0xFF00) >> 8);
-        sendSpiLED(1, i1 + 1, lsb1);
+        sendSpiLED2(i1 + 1, lsb0, i1 + 1, lsb1);
       }
 #endif//sy
     }
-    else if(!strcmp(ch, lr)) // led_row
+    else if(string[0] == 'l' && string[1] == 'r') // led_row
     {
 #ifndef ONE_TWENTY_EIGHT//for sixty four
       int row, data;
+      ch = strtok(string, space);
       ch = strtok(0, space);
       row = atoi(ch);
       ch = strtok(0, space);
@@ -343,8 +344,8 @@ void receiveOscMsgs(void)
 #else//for one twenty eight
       int row; 
       long data;
-      int lsb0, lsb1;
       int row1, i1;
+      ch = strtok(string, space);
       ch = strtok(0, space);
       row = atoi(ch);
       ch = strtok(0, space);
@@ -354,12 +355,10 @@ void receiveOscMsgs(void)
       {
         for(i = 0; i < 8; i++)
         {
-          int lsb0, lsb1;
           led_data[i] = 0;
           lsb0 = (int)(led_data[i] & 0x00FF);
-          sendSpiLED(0, i + 1, lsb0);
           lsb1 = (int)((led_data[i] & 0xFF00) >> 8);
-          sendSpiLED(1, i + 1, lsb1);
+          sendSpiLED2(i + 1, lsb0, i + 1, lsb1);
         }
         firstRun = FALSE;
       }
@@ -375,15 +374,18 @@ void receiveOscMsgs(void)
         else
           led_data[row1] &= ~((long)1 << i1);
         
-        sendSpiLED(0, row1 + 1, led_data[row1]);
+        //sy sendSpiLED(0, row1 + 1, led_data[row1]);
+        sendSpiLED2(row1 + 1, led_data[row1], 0, 0);
       }
       lsb1 = (int)((data & 0xFF00) >> 8);
-      sendSpiLED(1, row + 1, lsb1);
+      //sy sendSpiLED(1, row + 1, lsb1);
+      sendSpiLED2(0, 0, row + 1, lsb1);
 #endif//sy
     }
-    else if(!strcmp(ch, ae)) // adc_enable
+    else if(string[0] == 'a' && string[1] == 'e') // adc_enable
     {
       int pin, state;
+      ch = strtok(string, space);
       ch = strtok(0, space);
       pin = atoi(ch);
       ch = strtok(0, space);
@@ -393,10 +395,13 @@ void receiveOscMsgs(void)
       else
         disableAdc(pin);
     }
-    else if(!strcmp(ch, p)) // pwm
+    //sy else if(!strcmp(ch, p)) // pwm
+/*
+    else if(string[0] == 'p' && string[1] == 'w' && string[2] == 'm')
     {
       int prescale, period;
       float duty;
+      ch = strtok(string, space);
       ch = strtok(0, space);
       prescale = atoi(ch);
       ch = strtok(0, space);
@@ -411,6 +416,7 @@ void receiveOscMsgs(void)
         setup_timer_2(T2_DIV_BY_16, period, 1);
       set_pwm1_duty((long)(1024.0 * duty));
     }
+*/
 /*sy
     else if(!strcmp(ch, o)) // output
     {
@@ -425,45 +431,48 @@ void receiveOscMsgs(void)
         output_bit(PIN_B0, state);
     }
 */
-    else if(!strcmp(ch, it)) // intensity
+    else if(string[0] == 'i') // intensity
     {
+      ch = strtok(string, space);
       ch = strtok(0, space);
       para.intensity = atoi(ch);
 #ifndef ONE_TWENTY_EIGHT//for sixty four
       sendSpiLED(0x0A, para.intensity);
 #else//for one twenty eight
-      sendSpiLED(0, 0x0A, para.intensity);
-      sendSpiLED(1, 0x0A, para.intensity);
+      sendSpiLED2(0x0A, para.intensity, 0, 0);
+      sendSpiLED2(0, 0, 0x0A, para.intensity);
 #endif
       putParaToEeprom(&para, sizeof(para), 0);
     }
-    else if(!strcmp(ch, t)) // test
+    else if(string[0] == 't') // test
     {
       int state;
+      ch = strtok(string, space);
       ch = strtok(0, space);
       state = atoi(ch);
 #ifndef ONE_TWENTY_EIGHT//for sixty four
       sendSpiLED(15, state);
 #else//for one twenty eight
-      sendSpiLED(0, 15, state);
-      sendSpiLED(1, 15, state);
+      sendSpiLED2(15, state, 15, state);
 #endif//sy
     }
-    else if(!strcmp(ch, s)) // shutdown
+    else if(string[0] == 's') // shutdown
     {
       int state;
+      ch = strtok(string, space);
       ch = strtok(0, space);
       state = atoi(ch);
 #ifndef ONE_TWENTY_EIGHT//for sixty four
       sendSpiLED(12, state);
 #else//for one twenty eight
-      sendSpiLED(0, 12, state);
-      sendSpiLED(1, 12, state);
+      sendSpiLED2(12, state, 0, 0);
+      sendSpiLED2(0, 0, 12, state);
 #endif
     }
-    else if(!strcmp(ch, r)) // report
+    else if(string[0] == 'r') // report
     {
       int state;
+      ch = strtok(string, space);
       ch = strtok(0, space);
       state = atoi(ch);
       printf(usb_cdc_putc, "report %d %d", state, 1);
@@ -539,7 +548,7 @@ void sendOscMsgPress(void)
   {
     output_bit(SR_CLK, 1);
     output_bit(SR_CLK, 0);
-    
+
     output_bit(SR_A, 1);
 
     btnLast[i] = btnCurrent[i];
@@ -558,15 +567,25 @@ void sendOscMsgPress(void)
         btnCurrent[i] &= ~((long)1 << j);
       else
         btnCurrent[i] |= ((long)1 << j);
-      
+
       if(buttonCheck(i, j))
       {
 #ifdef ONE_TWENTY_EIGHT//for sixty four
         if(j < 8)
-          printf(usb_cdc_putc, "press %d %d %d\r", 7 - i, j, ((btnState[i] & ((long)1 << j)) ? 1 : 0));
+        {
+          if(btnState[i] & ((long)1 << j))
+            printf(usb_cdc_putc, "p%1X%1X\r", 7 - i, j);
+          else
+            printf(usb_cdc_putc, "r%1X%1X\r", 7 - i, j);
+        }
         else
 #endif
-          printf(usb_cdc_putc, "press %d %d %d\r", j, i, ((btnState[i] & ((long)1 << j)) ? 1 : 0));
+        {
+          if(btnState[i] & ((long)1 << j))
+            printf(usb_cdc_putc, "p%1X%1X\r", j, i);
+          else
+            printf(usb_cdc_putc, "r%1X%1X\r", j, i);
+        }
       }
       output_bit(SR_CLK2, 1);
       output_bit(SR_CLK2, 0);
@@ -636,6 +655,26 @@ void sendOscMsgAdc(void)
     }
     countAdc++;
   }
+  else
+  {
+    if(countAdc >= 8)
+    {
+      if((1 & (1 << loopAdc)) == (1 << loopAdc))
+      {
+        countAve[loopAdc]++;
+        if(countAve[loopAdc] == 8)
+          countAve[loopAdc] = 0;
+
+        usb_cdc_putc_fast(0x0A);
+      }
+      loopAdc++;
+      if(loopAdc >= kAdcFilterNumAdcs)
+        loopAdc = 0;
+
+      countAdc = 0;
+    }
+    countAdc++;
+  }
 }
 
 /**********************************/
@@ -673,6 +712,7 @@ short inputCheck(int index)
   return flag;
 }
 
+/*
 void sendOscMsgInput(void)
 {
   inLast = inCurrent;
@@ -693,6 +733,7 @@ void sendOscMsgInput(void)
       printf(usb_cdc_putc, "input %d %d\r", j, ((inState & (1 << j)) ? 1 : 0));
   }
 }
+*/
 
 /***********************************/
 /*                                 */
@@ -717,4 +758,30 @@ void putParaToEeprom(int *ptr,int num,int addr)
   int count;
   for(count = 0; count < num; count++)
     write_eeprom(addr + count, ptr[count]);
+}
+
+int my_atoi(char s)
+{
+  int result = 0;
+
+  if (s >= '0' && s <= '9')
+    result = (result << 4) + (s - '0');
+  else
+    result = (result << 4) + (s - 'A' + 10);
+  return result;
+}
+
+void my_get_string_usb(char* s, int max)
+{
+  int len = 0;
+  char c;
+
+  --max;
+  do {
+    c = usb_cdc_getc();
+    if(c >= ' ' && c <= '~')
+      if(len < max)
+        s[len++] = c;
+  } while(c != 13);
+  s[len] = 0;
 }
