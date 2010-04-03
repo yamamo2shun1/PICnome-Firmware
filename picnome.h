@@ -19,7 +19,7 @@
  * picnome.h,v.1.0.17 2010/03/29
  */
 
-//sy #define ONE_TWENTY_EIGHT
+#define ONE_TWENTY_EIGHT
 
 #include <18F2550.h>
 #device adc=10

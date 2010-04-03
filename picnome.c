@@ -655,26 +655,6 @@ void sendOscMsgAdc(void)
     }
     countAdc++;
   }
-  else
-  {
-    if(countAdc >= 8)
-    {
-      if((1 & (1 << loopAdc)) == (1 << loopAdc))
-      {
-        countAve[loopAdc]++;
-        if(countAve[loopAdc] == 8)
-          countAve[loopAdc] = 0;
-
-        usb_cdc_putc_fast(0x0A);
-      }
-      loopAdc++;
-      if(loopAdc >= kAdcFilterNumAdcs)
-        loopAdc = 0;
-
-      countAdc = 0;
-    }
-    countAdc++;
-  }
 }
 
 /**********************************/
