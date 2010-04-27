@@ -16,10 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.h,v.1.0.17 2010/03/29
+ * picnome.h,v.1.0.19 2010/04/27
  */
 
-#define ONE_TWENTY_EIGHT
+//sy #define ONE_TWENTY_EIGHT
 
 #include <18F2550.h>
 #device adc=10
@@ -79,7 +79,7 @@ void initLedDriver(void);
 #ifndef ONE_TWENTY_EIGHT//for sixty four
 void sendSpiLED(int msb, int lsb);
 #else//for one twenty eight
-void sendSpiLED(int id, int msb, int lsb);
+//sy void sendSpiLED(int id, int msb, int lsb);
 void sendSpiLED2(int msb0, int lsb0, int msb1, int lsb1);
 #endif//sy
 
@@ -101,7 +101,7 @@ long led_data[8];
 #endif//sy
 int firstRun = TRUE;
 
-char string[10];
+char string[15];
 char space[] = " ";
 
 void receiveOscMsgs(void);

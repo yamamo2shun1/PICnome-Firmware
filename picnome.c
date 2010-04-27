@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.1.0.17 2010/03/29
+ * picnome.c,v.1.0.19 2010/04/27
  */
 
 #include "picnome.h"
@@ -105,16 +105,53 @@ void main()
 void initLedDriver(void)
 {
   sendSpiLED(0x0B, 0x07);           // Scan Limit full range
-  sendSpiLED(0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
-  for(i = 1; i < 9; i++)
-    sendSpiLED(i, i);               // print startup pattern 
   sendSpiLED(0x0C, 0x01);           // Shutdown Normal Operation
   sendSpiLED(0x0F, 0x00);           // Display Test Off
+
+  // print startup pattern 
+  sendSpiLED(0x0A, 0x0F); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED(1, 0);
+  sendSpiLED(2, 0);
+  sendSpiLED(3, 0);
+  sendSpiLED(4, 24);
+  sendSpiLED(5, 24);
+  sendSpiLED(6, 0);
+  sendSpiLED(7, 0);
+  sendSpiLED(8, 0);
   for(i = 0; i < 64; i++)
   {
     sendSpiLED(0x0A, (64 - i) / 4);   // set to max intensity
-    delay_ms(8);
+    delay_ms(4);
   }
+  sendSpiLED(0x0A, 0x0F); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED(1, 0);
+  sendSpiLED(2, 0);
+  sendSpiLED(3, 24);
+  sendSpiLED(4, 36);
+  sendSpiLED(5, 36);
+  sendSpiLED(6, 24);
+  sendSpiLED(7, 0);
+  sendSpiLED(8, 0);
+  for(i = 0; i < 64; i++)
+  {
+    sendSpiLED(0x0A, (64 - i) / 4);   // set to max intensity
+    delay_ms(4);
+  }
+  sendSpiLED(0x0A, 0x0F); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED(1, 0);
+  sendSpiLED(2, 24);
+  sendSpiLED(3, 36);
+  sendSpiLED(4, 66);
+  sendSpiLED(5, 66);
+  sendSpiLED(6, 36);
+  sendSpiLED(7, 24);
+  sendSpiLED(8, 0);
+  for(i = 0; i < 64; i++)
+  {
+    sendSpiLED(0x0A, (64 - i) / 4);   // set to max intensity
+    delay_ms(4);
+  }
+
   sendSpiLED(0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
   for(i = 1; i < 9; i++)
     sendSpiLED(i, 0x00);
@@ -133,26 +170,42 @@ void initLedDriver(void)
 {
   sendSpiLED2(0x0B, 0x07, 0, 0);      // Scan Limit full range
   sendSpiLED2(0, 0, 0x0B, 0x07);      // Scan Limit full range
+  sendSpiLED2(0x0C, 0x01, 0, 0);      // Shutdown Normal Operation
+  sendSpiLED2(0, 0, 0x0C, 0x01);      // Shutdown Normal Operation
+  sendSpiLED2(0x0F, 0x00, 0, 0);      // Display Test Off
+  sendSpiLED2(0, 0, 0x0F, 0x00);      // Display Test Off
 
-  sendSpiLED2(0, 0, 0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
-  sendSpiLED2(0x0A, para.intensity, 0, 0); // Max Intensity 0x00[min] - 0x0F[max]
-
-  for(i = 1; i < 9; i++)
+  // print startup pattern 
+  sendSpiLED2(0x0A, 0x0F, 0, 0); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED2(4, 24, 0, 0);
+  sendSpiLED2(5, 24, 0, 0);
+  for(i = 0; i < 64; i++)
   {
-    sendSpiLED2(i, i, 0, 0);               // print startup pattern 
+    sendSpiLED2(0x0A, (64 - i) / 4, 0, 0);   // set to max intensity
+    delay_ms(4);
   }
-
-  sendSpiLED2(0x0C, 0x01, 0, 0);           // Shutdown Normal Operation
-  sendSpiLED2(0, 0, 0x0C, 0x01);           // Shutdown Normal Operation
-
-  sendSpiLED2(0x0F, 0x00, 0, 0);           // Display Test Off
-  sendSpiLED2(0, 0, 0x0F, 0x00);           // Display Test Off
-
+  sendSpiLED2(0x0A, 0x0F, 0, 0); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED2(3, 24, 0, 0);
+  sendSpiLED2(4, 36, 0, 0);
+  sendSpiLED2(5, 36, 0, 0);
+  sendSpiLED2(6, 24, 0, 0);
+  for(i = 0; i < 64; i++)
+  {
+    sendSpiLED2(0x0A, (64 - i) / 4, 0, 0);   // set to max intensity
+    delay_ms(4);
+  }
+  sendSpiLED2(0x0A, 0x0F, 0, 0); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED2(2, 24, 0, 0);
+  sendSpiLED2(3, 36, 0, 0);
+  sendSpiLED2(4, 66, 0, 0);
+  sendSpiLED2(5, 66, 0, 0);
+  sendSpiLED2(6, 36, 0, 0);
+  sendSpiLED2(7, 24, 0, 0);
   for(i = 0; i < 64; i++)
   {
     sendSpiLED2(0x0A, (64 - i) / 4, 0, 0);   // set to max intensity
     sendSpiLED2(0, 0, 0x0A, (64 - i) / 4);   // set to max intensity
-    delay_ms(8);
+    delay_ms(4);
   }
 
   sendSpiLED2(0x0A, para.intensity, 0, 0); // Max Intensity 0x00[min] - 0x0F[max]
@@ -192,13 +245,33 @@ void sendSpiLED(int id, int msb, int lsb)
 
 void sendSpiLED2(int msb0, int lsb0, int msb1, int lsb1)
 {
+/*
   output_bit(LDD_LOAD, 0);
-  spi_write(msb1);
-  spi_write(lsb1);
+  spi_write(0x00);
+  spi_write(0x00);
   spi_write(msb0);
   spi_write(lsb0);
   output_bit(LDD_LOAD, 1);
-  delay_us(5);
+  delay_us(3);
+
+  output_bit(LDD_LOAD, 0);
+  spi_write(msb1);
+  spi_write(lsb1);
+  spi_write(0x00);
+  spi_write(0x00);
+  output_bit(LDD_LOAD, 1);
+  delay_us(3);
+*/
+  output_bit(LDD_LOAD, 0);
+  spi_write(msb1);
+  delay_us(1);
+  spi_write(lsb1);
+  delay_us(1);
+  spi_write(msb0);
+  delay_us(1);
+  spi_write(lsb0);
+  delay_us(1);
+  output_bit(LDD_LOAD, 1);
 }
 #endif//sy
 
@@ -211,7 +284,7 @@ void receiveOscMsgs(void)
 {
   if(usb_cdc_kbhit())
   {
-    my_get_string_usb(string, 10);
+    my_get_string_usb(string, 15);
 
     if(string[0] == 'l' && (string[1] == '0' || string[1] == '1')) // led
     {
@@ -377,7 +450,8 @@ void receiveOscMsgs(void)
         //sy sendSpiLED(0, row1 + 1, led_data[row1]);
         sendSpiLED2(row1 + 1, led_data[row1], 0, 0);
       }
-      lsb1 = (int)((data & 0xFF00) >> 8);
+      //sy lsb1 = (int)((data & 0xFF00) >> 8);
+      lsb1 = (int)(data >> 8);
       //sy sendSpiLED(1, row + 1, lsb1);
       sendSpiLED2(0, 0, row + 1, lsb1);
 #endif//sy
