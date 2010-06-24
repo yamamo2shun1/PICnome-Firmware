@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.1.0.19 2010/04/27
+ * picnome.c,v.1.0.21 2010/06/23
  */
 
 #include "picnome.h"
@@ -46,9 +46,9 @@ void main()
   for(i = 0; i < 7; i++)
   {
     countAve[i] = 0;
-    adc_total[i] = 0.0;
+    adc_total[i] = 0;
     for(j = 0; j < 8; j++)
-      adc_value[i][j] = 0.0;
+      adc_value[i][j] = 0;
   }
 
   getParaFromEeprom(&para, sizeof(para), 0);
@@ -163,53 +163,48 @@ void sendSpiLED(int msb, int lsb)
   spi_write(msb);
   spi_write(lsb);
   output_bit(LDD_LOAD, 1);
-  delay_us(5);
+  delay_us(3);
 }
 #else//for one twenty eight
 void initLedDriver(void)
 {
-  sendSpiLED2(0x0B, 0x07, 0, 0);      // Scan Limit full range
-  sendSpiLED2(0, 0, 0x0B, 0x07);      // Scan Limit full range
-  sendSpiLED2(0x0C, 0x01, 0, 0);      // Shutdown Normal Operation
-  sendSpiLED2(0, 0, 0x0C, 0x01);      // Shutdown Normal Operation
-  sendSpiLED2(0x0F, 0x00, 0, 0);      // Display Test Off
-  sendSpiLED2(0, 0, 0x0F, 0x00);      // Display Test Off
+  sendSpiLED2(0x0B, 0x07, 0x0B, 0x07);      // Scan Limit full range
+  sendSpiLED2(0x0C, 0x01, 0x0C, 0x01);      // Shutdown Normal Operation
+  sendSpiLED2(0x0F, 0x00, 0x0F, 0x00);      // Display Test Off
 
   // print startup pattern 
-  sendSpiLED2(0x0A, 0x0F, 0, 0); // Max Intensity 0x00[min] - 0x0F[max]
-  sendSpiLED2(4, 24, 0, 0);
-  sendSpiLED2(5, 24, 0, 0);
+  sendSpiLED2(0x0A, 0x0F, 0x0A, 0x0F); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED2(4, 24, 4, 0);
+  sendSpiLED2(5, 24, 5, 0);
+  for(i = 0; i < 64; i++)
+  {
+    sendSpiLED2(0x0A, (64 - i) / 4, 0x0A, 0);   // set to max intensity
+    delay_ms(4);
+  }
+  sendSpiLED2(0x0A, 0x0F, 0x0A, 0x0F); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED2(3, 24, 3, 0);
+  sendSpiLED2(4, 36, 4, 0);
+  sendSpiLED2(5, 36, 5, 0);
+  sendSpiLED2(6, 24, 6, 0);
   for(i = 0; i < 64; i++)
   {
     sendSpiLED2(0x0A, (64 - i) / 4, 0, 0);   // set to max intensity
     delay_ms(4);
   }
-  sendSpiLED2(0x0A, 0x0F, 0, 0); // Max Intensity 0x00[min] - 0x0F[max]
-  sendSpiLED2(3, 24, 0, 0);
-  sendSpiLED2(4, 36, 0, 0);
-  sendSpiLED2(5, 36, 0, 0);
-  sendSpiLED2(6, 24, 0, 0);
+  sendSpiLED2(0x0A, 0x0F, 0x0A, 0x0F); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED2(2, 24, 2, 0);
+  sendSpiLED2(3, 36, 3, 0);
+  sendSpiLED2(4, 66, 4, 0);
+  sendSpiLED2(5, 66, 5, 0);
+  sendSpiLED2(6, 36, 6, 0);
+  sendSpiLED2(7, 24, 7, 0);
   for(i = 0; i < 64; i++)
   {
-    sendSpiLED2(0x0A, (64 - i) / 4, 0, 0);   // set to max intensity
-    delay_ms(4);
-  }
-  sendSpiLED2(0x0A, 0x0F, 0, 0); // Max Intensity 0x00[min] - 0x0F[max]
-  sendSpiLED2(2, 24, 0, 0);
-  sendSpiLED2(3, 36, 0, 0);
-  sendSpiLED2(4, 66, 0, 0);
-  sendSpiLED2(5, 66, 0, 0);
-  sendSpiLED2(6, 36, 0, 0);
-  sendSpiLED2(7, 24, 0, 0);
-  for(i = 0; i < 64; i++)
-  {
-    sendSpiLED2(0x0A, (64 - i) / 4, 0, 0);   // set to max intensity
-    sendSpiLED2(0, 0, 0x0A, (64 - i) / 4);   // set to max intensity
+    sendSpiLED2(0x0A, (64 - i) / 4, 0x0A, (64 - i) / 4);   // set to max intensity
     delay_ms(4);
   }
 
-  sendSpiLED2(0x0A, para.intensity, 0, 0); // Max Intensity 0x00[min] - 0x0F[max]
-  sendSpiLED2(0, 0, 0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
+  sendSpiLED2(0x0A, para.intensity, 0x0A, para.intensity); // Max Intensity 0x00[min] - 0x0F[max]
 
   for(i = 1; i < 9; i++)
   {
@@ -217,61 +212,15 @@ void initLedDriver(void)
   }
 }
 
-/*
-void sendSpiLED(int id, int msb, int lsb)
-{
-  if(id == 0)
-  {
-    output_bit(LDD_LOAD, 0);
-    spi_write(0x00);
-    spi_write(0x00);
-    spi_write(msb);
-    spi_write(lsb);
-    output_bit(LDD_LOAD, 1);
-    delay_us(1);
-  }
-  else if(id == 1)
-  {
-    output_bit(LDD_LOAD, 0);
-    spi_write(msb);
-    spi_write(lsb);
-    spi_write(0x00);
-    spi_write(0x00);
-    output_bit(LDD_LOAD, 1);
-    delay_us(1);
-  }
-}
-*/
-
 void sendSpiLED2(int msb0, int lsb0, int msb1, int lsb1)
 {
-/*
-  output_bit(LDD_LOAD, 0);
-  spi_write(0x00);
-  spi_write(0x00);
-  spi_write(msb0);
-  spi_write(lsb0);
-  output_bit(LDD_LOAD, 1);
-  delay_us(3);
-
   output_bit(LDD_LOAD, 0);
   spi_write(msb1);
   spi_write(lsb1);
-  spi_write(0x00);
-  spi_write(0x00);
-  output_bit(LDD_LOAD, 1);
-  delay_us(3);
-*/
-  output_bit(LDD_LOAD, 0);
-  spi_write(msb1);
-  delay_us(1);
-  spi_write(lsb1);
-  delay_us(1);
   spi_write(msb0);
-  delay_us(1);
   spi_write(lsb0);
-  delay_us(1);
   output_bit(LDD_LOAD, 1);
+  delay_us(2);
 }
 #endif//sy
 
@@ -291,12 +240,6 @@ void receiveOscMsgs(void)
       x = my_atoi(string[2]);
       y = my_atoi(string[3]);
       state = my_atoi(string[1]);
-/*
-      if(string[0] == 'l')
-        state = 1;
-      else
-        state = 0;
-*/
 #ifndef ONE_TWENTY_EIGHT//for sixty four
       if(state)
         led_data[y] |= (1 << x);
@@ -387,9 +330,14 @@ void receiveOscMsgs(void)
         else
           led_data[i1] &= ~((long)1 << column1);
         
-        lsb0 = (int)(led_data[i1] & 0x00FF);
-        lsb1 = (int)((led_data[i1] & 0xFF00) >> 8);
-        sendSpiLED2(i1 + 1, lsb0, i1 + 1, lsb1);
+        if(column < 8) {
+          lsb0 = (int)(led_data[i1] & 0x00FF);
+          sendSpiLED2(i1 + 1, lsb0, 0, 0);
+        }
+        else {
+          lsb1 = (int)((led_data[i1] >> 8) & 0x00FF);
+          sendSpiLED2(0, 0, i1 + 1, lsb1);
+        }
       }
 #endif//sy
     }
@@ -447,12 +395,9 @@ void receiveOscMsgs(void)
         else
           led_data[row1] &= ~((long)1 << i1);
         
-        //sy sendSpiLED(0, row1 + 1, led_data[row1]);
         sendSpiLED2(row1 + 1, led_data[row1], 0, 0);
       }
-      //sy lsb1 = (int)((data & 0xFF00) >> 8);
       lsb1 = (int)(data >> 8);
-      //sy sendSpiLED(1, row + 1, lsb1);
       sendSpiLED2(0, 0, row + 1, lsb1);
 #endif//sy
     }
@@ -513,8 +458,7 @@ void receiveOscMsgs(void)
 #ifndef ONE_TWENTY_EIGHT//for sixty four
       sendSpiLED(0x0A, para.intensity);
 #else//for one twenty eight
-      sendSpiLED2(0x0A, para.intensity, 0, 0);
-      sendSpiLED2(0, 0, 0x0A, para.intensity);
+      sendSpiLED2(0x0A, para.intensity, 0x0A, para.intensity);
 #endif
       putParaToEeprom(&para, sizeof(para), 0);
     }
@@ -539,18 +483,16 @@ void receiveOscMsgs(void)
 #ifndef ONE_TWENTY_EIGHT//for sixty four
       sendSpiLED(12, state);
 #else//for one twenty eight
-      sendSpiLED2(12, state, 0, 0);
-      sendSpiLED2(0, 0, 12, state);
+      sendSpiLED2(12, state, 12, state);
 #endif
     }
-    else if(string[0] == 'r') // report
+    else if(string[0] == 'f') // firmware
     {
-      int state;
-      ch = strtok(string, space);
-      ch = strtok(0, space);
-      state = atoi(ch);
-      printf(usb_cdc_putc, "report %d %d", state, 1);
-      usb_cdc_putc(0x0D);
+      usb_cdc_putc('f');
+      usb_cdc_putc(10);
+      delay_us(1);
+      usb_cdc_putc(21);
+      delay_us(1);
     }
   }
 }
@@ -648,17 +590,23 @@ void sendOscMsgPress(void)
         if(j < 8)
         {
           if(btnState[i] & ((long)1 << j))
-            printf(usb_cdc_putc, "p%1X%1X\r", 7 - i, j);
+            usb_cdc_putc('p');
           else
-            printf(usb_cdc_putc, "r%1X%1X\r", 7 - i, j);
+            usb_cdc_putc('r');
+          delay_us(1);
+          usb_cdc_putc((j << 4) + (7 - i));
+          delay_us(1);
         }
         else
 #endif
         {
           if(btnState[i] & ((long)1 << j))
-            printf(usb_cdc_putc, "p%1X%1X\r", j, i);
+            usb_cdc_putc('p');
           else
-            printf(usb_cdc_putc, "r%1X%1X\r", j, i);
+            usb_cdc_putc('r');
+          delay_us(1);
+          usb_cdc_putc((i << 4) + j);
+          delay_us(1);
         }
       }
       output_bit(SR_CLK2, 1);
@@ -709,17 +657,22 @@ void sendOscMsgAdc(void)
       if((gAdcEnableState & (1 << loopAdc)) == (1 << loopAdc))
       {
         set_adc_channel(adc_id[loopAdc]);
-        fvalue = read_adc(ADC_START_AND_READ) / 1024.0;
-        adc_total[loopAdc] += fvalue;
+        lvalue = read_adc(ADC_START_AND_READ);
+        adc_total[loopAdc] += lvalue;
         adc_total[loopAdc] -= adc_value[loopAdc][countAve[loopAdc]];
-        adc_value[loopAdc][countAve[loopAdc]] = fvalue;
-        fvalue = adc_total[loopAdc] / 8.0;
+        adc_value[loopAdc][countAve[loopAdc]] = lvalue;
+        lvalue = adc_total[loopAdc] / 8;
 
         countAve[loopAdc]++;
         if(countAve[loopAdc] == 8)
           countAve[loopAdc] = 0;
 
-        printf(usb_cdc_putc, "adc %d %f\r", loopAdc, fvalue);
+        usb_cdc_putc('a');
+        delay_us(1);
+        usb_cdc_putc((int)((loopAdc << 4) + ((lvalue & 0x0300) >> 8)));
+        delay_us(1);
+        usb_cdc_putc((int)(lvalue & 0x00FF));
+        delay_us(1);
       }
       loopAdc++;
       if(loopAdc >= kAdcFilterNumAdcs)

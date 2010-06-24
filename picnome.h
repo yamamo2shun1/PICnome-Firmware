@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.h,v.1.0.19 2010/04/27
+ * picnome.h,v.1.0.21 2010/06/23
  */
 
 //sy #define ONE_TWENTY_EIGHT
@@ -127,9 +127,9 @@ int gAdcEnableState = 0;
 short enableAdcFlag = FALSE;
 int countAdc = 0, loopAdc = 0, enableAdcNum = 0;
 int countAve[7];
-float fvalue = 0.0;
-float adc_total[7];
-float adc_value[7][8];
+long lvalue = 0;
+long adc_total[7];
+long adc_value[7][8];
 
 void enableAdc(int port);
 void disableAdc(int port);
