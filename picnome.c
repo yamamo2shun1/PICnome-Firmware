@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.1.0.21 2010/06/23
+ * picnome.c,v.1.0.22 2010/06/25
  */
 
 #include "picnome.h"
@@ -163,7 +163,7 @@ void sendSpiLED(int msb, int lsb)
   spi_write(msb);
   spi_write(lsb);
   output_bit(LDD_LOAD, 1);
-  delay_us(3);
+  delay_cycles(1);
 }
 #else//for one twenty eight
 void initLedDriver(void)
@@ -220,7 +220,7 @@ void sendSpiLED2(int msb0, int lsb0, int msb1, int lsb1)
   spi_write(msb0);
   spi_write(lsb0);
   output_bit(LDD_LOAD, 1);
-  delay_us(2);
+  delay_cycles(1);
 }
 #endif//sy
 
@@ -490,9 +490,9 @@ void receiveOscMsgs(void)
     {
       usb_cdc_putc('f');
       usb_cdc_putc(10);
-      delay_us(1);
-      usb_cdc_putc(21);
-      delay_us(1);
+      delay_cycles(1);
+      usb_cdc_putc(22);
+      delay_cycles(1);
     }
   }
 }
@@ -593,9 +593,9 @@ void sendOscMsgPress(void)
             usb_cdc_putc('p');
           else
             usb_cdc_putc('r');
-          delay_us(1);
+          delay_cycles(1);
           usb_cdc_putc((j << 4) + (7 - i));
-          delay_us(1);
+          delay_cycles(1);
         }
         else
 #endif
@@ -604,9 +604,9 @@ void sendOscMsgPress(void)
             usb_cdc_putc('p');
           else
             usb_cdc_putc('r');
-          delay_us(1);
+          delay_cycles(1);
           usb_cdc_putc((i << 4) + j);
-          delay_us(1);
+          delay_cycles(1);
         }
       }
       output_bit(SR_CLK2, 1);
@@ -668,11 +668,11 @@ void sendOscMsgAdc(void)
           countAve[loopAdc] = 0;
 
         usb_cdc_putc('a');
-        delay_us(1);
+        delay_cycles(1);
         usb_cdc_putc((int)((loopAdc << 4) + ((lvalue & 0x0300) >> 8)));
-        delay_us(1);
+        delay_cycles(1);
         usb_cdc_putc((int)(lvalue & 0x00FF));
-        delay_us(1);
+        delay_cycles(1);
       }
       loopAdc++;
       if(loopAdc >= kAdcFilterNumAdcs)

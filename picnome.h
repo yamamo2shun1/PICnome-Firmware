@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.h,v.1.0.21 2010/06/23
+ * picnome.h,v.1.0.22 2010/06/25
  */
 
 //sy #define ONE_TWENTY_EIGHT
