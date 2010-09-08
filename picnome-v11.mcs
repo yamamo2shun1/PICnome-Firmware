@@ -1,0 +1,189 @@
+[Header]
+MagicCookie={0b13fe8c-dfe0-40eb-8900-6712719559a7}
+Version=1.0
+[File000]
+Location=Y:\PICnome-firmware-v11\picnome.o
+Folder=Intermediary
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={069BD372-6CA0-40D4-BF2F-5DC806D05083}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-gcc.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-g -Wall
+TraceCmdString=
+DebugOptions=
+[File001]
+Location=Y:\PICnome-firmware-v11\usb_descriptors.o
+Folder=Intermediary
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={069BD372-6CA0-40D4-BF2F-5DC806D05083}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-gcc.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-g -Wall
+TraceCmdString=
+DebugOptions=
+[File002]
+Location=Y:\PICnome-firmware-v11\usb_device.o
+Folder=Intermediary
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={069BD372-6CA0-40D4-BF2F-5DC806D05083}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-gcc.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-g -Wall
+TraceCmdString=
+DebugOptions=
+[File003]
+Location=Y:\PICnome-firmware-v11\usb_function_cdc.o
+Folder=Intermediary
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={069BD372-6CA0-40D4-BF2F-5DC806D05083}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-gcc.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-g -Wall
+TraceCmdString=
+DebugOptions=
+[File004]
+Location=Y:\PICnome-firmware-v11\PIC24 HID Bootloader Remapping.o
+Folder=Intermediary
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={DE18EB1A-B46B-486B-B96F-A811A635DFAC}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-as.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-g
+TraceCmdString=
+DebugOptions=
+[File005]
+Location=X:\PICnome-firmware-v11\picnome.o
+Folder=Intermediary
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={069BD372-6CA0-40D4-BF2F-5DC806D05083}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-gcc.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-g -Wall
+TraceCmdString=
+DebugOptions=
+[File006]
+Location=X:\PICnome-firmware-v11\usb_descriptors.o
+Folder=Intermediary
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={069BD372-6CA0-40D4-BF2F-5DC806D05083}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-gcc.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-g -Wall
+TraceCmdString=
+DebugOptions=
+[File007]
+Location=X:\PICnome-firmware-v11\usb_device.o
+Folder=Intermediary
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={069BD372-6CA0-40D4-BF2F-5DC806D05083}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-gcc.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-g -Wall
+TraceCmdString=
+DebugOptions=
+[File008]
+Location=X:\PICnome-firmware-v11\usb_function_cdc.o
+Folder=Intermediary
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={069BD372-6CA0-40D4-BF2F-5DC806D05083}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-gcc.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-g -Wall
+TraceCmdString=
+DebugOptions=
+[File009]
+Location=X:\PICnome-firmware-v11\PIC24 HID Bootloader Remapping.o
+Folder=Intermediary
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={DE18EB1A-B46B-486B-B96F-A811A635DFAC}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-as.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-g
+TraceCmdString=
+DebugOptions=
+[File010]
+Location=Y:\PICnome-firmware-v11\picnome-v11.cof
+Folder=Output
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={433C3D55-811D-409D-A6BF-159CF9355B42}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-ld.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-Map="$(BINDIR_)$(TARGETBASE).map" --report-mem -o"$(BINDIR_)$(TARGETBASE).$(TARGETSUFFIX)"
+TraceCmdString=
+DebugOptions=
+[File011]
+Location=Y:\PICnome-firmware-v11\picnome-v11.hex
+Folder=Output
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={433C3D55-811D-409D-A6BF-159CF9355B42}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-ld.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-Map="$(BINDIR_)$(TARGETBASE).map" --report-mem -o"$(BINDIR_)$(TARGETBASE).$(TARGETSUFFIX)"
+TraceCmdString=
+DebugOptions=
+[File012]
+Location=X:\PICnome-firmware-v11\picnome-v11.cof
+Folder=Output
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={433C3D55-811D-409D-A6BF-159CF9355B42}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-ld.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-Map="$(BINDIR_)$(TARGETBASE).map" --report-mem -o"$(BINDIR_)$(TARGETBASE).$(TARGETSUFFIX)"
+TraceCmdString=
+DebugOptions=
+[File013]
+Location=X:\PICnome-firmware-v11\picnome-v11.hex
+Folder=Output
+DeviceName=PIC24FJ64GB002
+LanguageToolSuiteID={479DDE59-4D56-455E-855E-FFF59A3DB57E}
+LanguageToolID={433C3D55-811D-409D-A6BF-159CF9355B42}
+LanguageToolLocation=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-ld.exe
+PPAD=$(BINDIR)||$(TMPDIR)||$(AINDIR)||$(INCDIR)|.;USB;Include\USB;Include||$(LIBDIR)|C:\Program Files (x86)\Microchip\MPLAB C30\lib\PIC24F||$(LKRDIR)||
+SOLK=<src>|picnome.c|usb_descriptors.c|USB\usb_device.c|USB\usb_function_cdc.c|PIC24 HID Bootloader Remapping.s||<obj>||<lib>||<lkr>|boot_hid_p24FJ64GB002.gld||
+SuiteArgsString=
+ToolArgsString=-Map="$(BINDIR_)$(TARGETBASE).map" --report-mem -o"$(BINDIR_)$(TARGETBASE).$(TARGETSUFFIX)"
+TraceCmdString=
+DebugOptions=
+[TOOL_LOC_STAMPS]
+tool_loc{DE18EB1A-B46B-486B-B96F-A811A635DFAC}=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-as.exe
+tool_loc{069BD372-6CA0-40D4-BF2F-5DC806D05083}=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-gcc.exe
+tool_loc{433C3D55-811D-409D-A6BF-159CF9355B42}=C:\Program Files (x86)\Microchip\MPLAB C30\bin\pic30-ld.exe
