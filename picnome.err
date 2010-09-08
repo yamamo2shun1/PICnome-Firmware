@@ -1,7 +1,0 @@
->>> Warning 203 "C:\Program Files (x86)\PICC\drivers\pic18_usb.h" Line 523(1,1): Condition always TRUE
->>> Warning 216 "picnome.c" Line 817(0,1): Interrupts disabled during call to prevent re-entrancy:  (usb_token_reset)
->>> Warning 216 "picnome.c" Line 817(0,1): Interrupts disabled during call to prevent re-entrancy:  (usb_flush_out)
->>> Warning 216 "picnome.c" Line 817(0,1): Interrupts disabled during call to prevent re-entrancy:  (usb_cdc_flush_out_buffer)
->>> Warning 202 "Y:\PICnome-firmware\usb_desc_cdc.h" Line 146(16,37): Variable never used:   USB_CLASS_DESCRIPTORS
-      Memory usage:   ROM=29%      RAM=70% - 72%
-      0 Errors,  5 Warnings.
