@@ -1,0 +1,28 @@
+[PROJECT]
+Target=Y:\BootLoader\bootloader.hex
+Development_Mode=
+Processor_Text=PIC18F2550
+ToolSuite=CCS
+Processor=0x2550
+[Y:\BootLoader\bootloader]
+Type=4
+Path=
+FileList=
+BuildTool=
+OptionString=
+AdditionalOptionString=
+[mru-list]
+1=Y:\BootLoader\bootloader.c
+[Windows]
+0=0000 %S 0 0 796 451 3 0
+[Opened Files]
+1=bootloader.c
+2=usb_desc_cdc.h
+3=C:\Program Files\PICC\drivers\usb_bootloader.h
+4=
+[Target Data]
+OptionString=-p +FH
+FileList=y:\picnome-firmware\bootloader.c
+[Units]
+Count=1
+1=bootloader.c (main)
