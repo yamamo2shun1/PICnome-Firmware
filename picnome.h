@@ -76,7 +76,7 @@ BOOL buttonCheck(int row, int index);
 void sendOscMsgPress(void);
 
 //A/D Conversion Settings
-#define NUM_ADC_PINS 6
+#define NUM_ADC_PINS 6//max = 6
 //sy #define ADC_AVG_RANGE 2//sy 8
 
 BYTE gAdcEnableState = 0;

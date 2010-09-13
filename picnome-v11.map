@@ -1,4 +1,4 @@
-Microchip Technology Inc, vv3_23 (b) u
+Microchip Technology Inc, vv3_23 (b) b
 
 Tool Name:
   c:\program files (x86)\microchip\mplab c30\bin\bin\..\bin/pic30-coff-ld.exe
@@ -81,7 +81,7 @@ section                    address      alignment gaps    total length  (dec)
 .data                        0xb0e                   0            0x50  (80)
 .bss                         0xb5e                   0             0x2  (2)
 .dconst                      0xb60                   0             0x2  (2)
-_02ce7d204c5a8bea            0xc00                   0            0x40  (64)
+_02e06d204c88cefd            0xc00                   0            0x40  (64)
 
                         Total data memory used (bytes):          0x3a2  (930) 11%
 
@@ -1867,9 +1867,9 @@ __c30_signature
                     0x09f6                  led_data
                     0x0a06                  para
 
-_02ce7d204c5a8bea
+_02e06d204c88cefd
                     0x0c00         0x40
- _02ce7d204c5a8bea
+ _02e06d204c88cefd
                     0x0c00         0x40 usb_device.o
                     0x0c00                  BDT
 

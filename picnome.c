@@ -59,11 +59,11 @@ int main(void)
   IEC0bits.SPI1IE = 0; /* Interrupt Enable/Disable bit */
 
   // A/D Conversion Interrupt Intialize
-  PR3 = 311; // 5msec
+  PR3 = 4;//sy 311; // 5msec
   T3CON = 0b1000000000110000;
   AD1CON1 = 0x8044;
   AD1CON2 = 0x0414;
-  AD1CON3 = 0x1F05;
+  AD1CON3 = 0x1F02;//sy 0x1F05;
   AD1CHS =  0x0000;
   AD1PCFG = 0xFFC0;
   AD1CSSL = 0x003F;
@@ -430,7 +430,7 @@ void receiveOscMsgs(void)
     {
       sendmsg[0] = 'f';
       sendmsg[1] = 11;
-      sendmsg[2] = 1;
+      sendmsg[2] = 3;
       if(mUSBUSARTIsTxTrfReady())
         mUSBUSARTTxRam(sendmsg, 3);
       CDCTxService();
@@ -580,16 +580,6 @@ void disableAdc(int port)
 void __attribute__((interrupt, auto_psv)) _ADC1Interrupt(void)
 {
   IFS0bits.AD1IF = 0;
-/*sy
-  anlg[countAdc][0] = ADC1BUF0;
-  anlg[countAdc][1] = ADC1BUF1;
-  anlg[countAdc][2] = ADC1BUF2;
-  anlg[countAdc][3] = ADC1BUF3;
-  anlg[countAdc][4] = ADC1BUF4;
-  anlg[countAdc][5] = ADC1BUF5;
-
-  countAdc++;
-*/
   anlg_avg[0] = ADC1BUF0;
   anlg_avg[1] = ADC1BUF1;
   anlg_avg[2] = ADC1BUF2;
@@ -599,19 +589,9 @@ void __attribute__((interrupt, auto_psv)) _ADC1Interrupt(void)
 
   for(p = 0; p < NUM_ADC_PINS; p++)
   {
-/*
-    anlg_avg[p] = 0.0;
-    for(q = 0; q < ADC_AVG_RANGE; q++)
-      anlg_avg[p] += anlg[q][p];
-    anlg_avg[p] /= ADC_AVG_RANGE;
-*/
     if((gAdcEnableState & (1 << p)) == (1 << p))
       adcSendFlag[p] = TRUE;
   }
-/*
-  if(countAdc == ADC_AVG_RANGE)
-    countAdc = 0;
-*/
 }
 
 void sendOscMsgAdc(void)
