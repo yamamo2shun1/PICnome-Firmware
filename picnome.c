@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.1.0.22 2010/06/25
+ * picnome.c,v.1.0.24 2010/09/14
  */
 
 #include "picnome.h"
@@ -237,8 +237,10 @@ void receiveOscMsgs(void)
 
     if(string[0] == 'l' && (string[1] == '0' || string[1] == '1')) // led
     {
-      x = my_atoi(string[2]);
       y = my_atoi(string[3]);
+      if(y >= 8)
+        return;
+      x = my_atoi(string[2]);
       state = my_atoi(string[1]);
 #ifndef ONE_TWENTY_EIGHT//for sixty four
       if(state)
@@ -491,7 +493,7 @@ void receiveOscMsgs(void)
       usb_cdc_putc('f');
       usb_cdc_putc(10);
       delay_cycles(1);
-      usb_cdc_putc(22);
+      usb_cdc_putc(24);
       delay_cycles(1);
     }
   }

@@ -16,10 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.h,v.1.0.22 2010/06/25
+ * picnome.h,v.1.0.24 2010/09/14
  */
 
-//sy #define ONE_TWENTY_EIGHT
+#define ONE_TWENTY_EIGHT
 
 #include <18F2550.h>
 #device adc=10

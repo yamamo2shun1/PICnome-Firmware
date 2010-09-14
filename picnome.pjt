@@ -1,10 +1,10 @@
 [PROJECT]
-Target=Y:\PICnome-firmware\picnome.hex
+Target=X:\PICnome-firmware\picnome.hex
 Development_Mode=
 Processor_Text=PIC18F2550
 ToolSuite=CCS
 Processor=0x2550
-[Y:\PICnome-firmware\picnome]
+[X:\PICnome-firmware\picnome]
 Type=4
 Path=
 FileList=
@@ -12,7 +12,7 @@ BuildTool=
 OptionString=
 AdditionalOptionString=
 [mru-list]
-1=Y:\PICnome-firmware\picnome.c
+1=X:\PICnome-firmware\picnome.c
 [Windows]
 0=0000 %S 0 0 796 451 3 0
 [Opened Files]
@@ -26,7 +26,7 @@ AdditionalOptionString=
 8=
 [Target Data]
 OptionString=-p +FH
-FileList=Y:\PICnome-firmware\picnome.c
+FileList=X:\PICnome-firmware\picnome.c
 [Units]
 Count=1
 1=picnome.c (main)
