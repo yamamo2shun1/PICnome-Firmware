@@ -151,7 +151,7 @@ state according to the definition in the USB specification.
  * usb_config.h
  ********************************************************************/
 
-#define ONE_TWENTY_EIGHT
+//sy #define ONE_TWENTY_EIGHT
 
 #ifndef __USB_DESCRIPTORS_C
 #define __USB_DESCRIPTORS_C

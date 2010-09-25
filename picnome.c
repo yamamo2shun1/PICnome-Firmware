@@ -59,7 +59,7 @@ int main(void)
   IEC0bits.SPI1IE = 0; /* Interrupt Enable/Disable bit */
 
   // A/D Conversion Interrupt Intialize
-  PR3 = 4;//sy 311; // 5msec
+  PR3 = 16;//sy 311; // 5msec
   T3CON = 0b1000000000110000;
   AD1CON1 = 0x8044;
   AD1CON2 = 0x0414;

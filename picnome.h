@@ -23,7 +23,7 @@
  * picnome.h,v.1.1.03 2010/09/08
  */
 
-#define ONE_TWENTY_EIGHT
+//sy #define ONE_TWENTY_EIGHT
 
 #include "usb.h"
 #include "usb_function_cdc.h"
