@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.1.1.03 2010/09/08
+ * picnome.c,v.1.1.04 2010/10/02
  */
 
 #include "picnome.h"
@@ -68,7 +68,7 @@ int main(void)
   AD1PCFG = 0xFFC0;
   AD1CSSL = 0x003F;
   IEC0bits.AD1IE = 1;
-  countAdc = 0;
+  countChk = 0;
   for(i = 0; i < 6; i++)
   {
     adcSendFlag[i] = FALSE;
@@ -430,7 +430,7 @@ void receiveOscMsgs(void)
     {
       sendmsg[0] = 'f';
       sendmsg[1] = 11;
-      sendmsg[2] = 3;
+      sendmsg[2] = 4;
       if(mUSBUSARTIsTxTrfReady())
         mUSBUSARTTxRam(sendmsg, 3);
       CDCTxService();
@@ -580,17 +580,37 @@ void disableAdc(int port)
 void __attribute__((interrupt, auto_psv)) _ADC1Interrupt(void)
 {
   IFS0bits.AD1IF = 0;
+#if 0//sy
   anlg_avg[0] = ADC1BUF0;
   anlg_avg[1] = ADC1BUF1;
   anlg_avg[2] = ADC1BUF2;
   anlg_avg[3] = ADC1BUF3;
   anlg_avg[4] = ADC1BUF4;
   anlg_avg[5] = ADC1BUF5;
+#else//sy
+  anlg[countChk][0] = ADC1BUF0;
+  anlg[countChk][1] = ADC1BUF1;
+  anlg[countChk][2] = ADC1BUF2;
+  anlg[countChk][3] = ADC1BUF3;
+  anlg[countChk][4] = ADC1BUF4;
+  anlg[countChk][5] = ADC1BUF5;
+  countChk++;
+  if(countChk >= ADC_CHK_NUM)
+    countChk = 0;
+#endif//sy
 
   for(p = 0; p < NUM_ADC_PINS; p++)
   {
+#if 0//sy
     if((gAdcEnableState & (1 << p)) == (1 << p))
       adcSendFlag[p] = TRUE;
+#else//sy
+    if((gAdcEnableState & (1 << p)) == (1 << p) && abs(anlg[countChk][p] - anlg[1 - countChk][p]) >= 4)
+    {
+      anlg_avg[p] = anlg[countChk][p];
+      adcSendFlag[p] = TRUE;
+    }
+#endif//sy
   }
 }
 
@@ -611,8 +631,9 @@ void sendOscMsgAdc(void)
   {
     mUSBUSARTTxRam(sendmsg2, msg_index2);
     msg_index2 = 0;
+    CDCTxService();
   }
-  CDCTxService();
+  //sy CDCTxService();
   delayUs(1);
 }
 
