@@ -77,7 +77,7 @@ void sendOscMsgPress(void);
 
 //A/D Conversion Settings
 #define NUM_ADC_PINS 6//max = 6
-#define ADC_CHK_NUM 4
+#define ADC_CHK_NUM 8//sy 4
 
 BYTE gAdcEnableState = 0;
 BOOL enableAdcFlag = FALSE;
