@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.h,v.1.1.04 2010/10/02
+ * picnome.h,v.1.1.05 2010/10/08
  */
 
 //sy #define ONE_TWENTY_EIGHT
@@ -41,7 +41,6 @@ _CONFIG4(DSWDTPS_DSWDTPS0 & DSWDTOSC_LPRC & RTCOSC_LPRC & DSBOREN_OFF & DSWDTEN_
 #include "usb_config.h"
 #include "usb_device.h"
 #include "stdio.h"
-#include "math.h"
 
 // Global Variables
 BYTE i, j, k, p, q;
@@ -78,14 +77,15 @@ void sendOscMsgPress(void);
 
 //A/D Conversion Settings
 #define NUM_ADC_PINS 6//max = 6
-#define ADC_CHK_NUM 2
+#define ADC_CHK_NUM 4
 
 BYTE gAdcEnableState = 0;
 BOOL enableAdcFlag = FALSE;
 BYTE countChk = 0, enableAdcNum = 0;
 BOOL adcSendFlag[NUM_ADC_PINS];
-WORD anlg_avg[NUM_ADC_PINS];
+WORD anlg1[NUM_ADC_PINS];
 WORD anlg[ADC_CHK_NUM][NUM_ADC_PINS];
+WORD anlg0[NUM_ADC_PINS];
 
 void enableAdc(int port);
 void disableAdc(int port);

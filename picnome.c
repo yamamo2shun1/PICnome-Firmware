@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.1.1.04 2010/10/02
+ * picnome.c,v.1.1.05 2010/10/08
  */
 
 #include "picnome.h"
@@ -59,10 +59,10 @@ int main(void)
   IEC0bits.SPI1IE = 0; /* Interrupt Enable/Disable bit */
 
   // A/D Conversion Interrupt Intialize
-  PR3 = 16;//sy 311; // 5msec
+  PR3 = 4;//sy 311; // 5msec
   T3CON = 0b1000000000110000;
   AD1CON1 = 0x8044;
-  AD1CON2 = 0x0414;
+  AD1CON2 = 0x042C;//sy 0x0414;
   AD1CON3 = 0x1F02;//sy 0x1F05;
   AD1CHS =  0x0000;
   AD1PCFG = 0xFFC0;
@@ -72,7 +72,8 @@ int main(void)
   for(i = 0; i < 6; i++)
   {
     adcSendFlag[i] = FALSE;
-    anlg_avg[i] = 0;
+    anlg1[i] = 0;
+    anlg0[i] = 0;
   }
 
   delayMs(100);
@@ -430,7 +431,7 @@ void receiveOscMsgs(void)
     {
       sendmsg[0] = 'f';
       sendmsg[1] = 11;
-      sendmsg[2] = 4;
+      sendmsg[2] = 5;
       if(mUSBUSARTIsTxTrfReady())
         mUSBUSARTTxRam(sendmsg, 3);
       CDCTxService();
@@ -580,37 +581,30 @@ void disableAdc(int port)
 void __attribute__((interrupt, auto_psv)) _ADC1Interrupt(void)
 {
   IFS0bits.AD1IF = 0;
-#if 0//sy
-  anlg_avg[0] = ADC1BUF0;
-  anlg_avg[1] = ADC1BUF1;
-  anlg_avg[2] = ADC1BUF2;
-  anlg_avg[3] = ADC1BUF3;
-  anlg_avg[4] = ADC1BUF4;
-  anlg_avg[5] = ADC1BUF5;
-#else//sy
-  anlg[countChk][0] = ADC1BUF0;
-  anlg[countChk][1] = ADC1BUF1;
-  anlg[countChk][2] = ADC1BUF2;
-  anlg[countChk][3] = ADC1BUF3;
-  anlg[countChk][4] = ADC1BUF4;
-  anlg[countChk][5] = ADC1BUF5;
+  anlg[countChk][0] = ((ADC1BUF0 + ADC1BUF6) / 2);
+  anlg[countChk][1] = ((ADC1BUF1 + ADC1BUF7) / 2);
+  anlg[countChk][2] = ((ADC1BUF2 + ADC1BUF8) / 2);
+  anlg[countChk][3] = ((ADC1BUF3 + ADC1BUF9) / 2);
+  anlg[countChk][4] = ((ADC1BUF4 + ADC1BUFA) / 2);
+  anlg[countChk][5] = ((ADC1BUF5 + ADC1BUFB) / 2);
   countChk++;
   if(countChk >= ADC_CHK_NUM)
     countChk = 0;
-#endif//sy
 
   for(p = 0; p < NUM_ADC_PINS; p++)
   {
-#if 0//sy
-    if((gAdcEnableState & (1 << p)) == (1 << p))
-      adcSendFlag[p] = TRUE;
-#else//sy
-    if((gAdcEnableState & (1 << p)) == (1 << p) && abs(anlg[countChk][p] - anlg[1 - countChk][p]) >= 4)
+    if(countChk == 0 && (gAdcEnableState & (1 << p)) == (1 << p))
     {
-      anlg_avg[p] = anlg[countChk][p];
-      adcSendFlag[p] = TRUE;
+      WORD sum = 0;
+      for(q = 0; q < ADC_CHK_NUM; q++)
+        sum += anlg[q][p];
+      anlg1[p] = sum / (WORD)ADC_CHK_NUM;
+      if(abs(anlg1[p] - anlg0[p]) > 4)
+      {
+        adcSendFlag[p] = TRUE;
+        anlg0[p] = anlg1[p];
+      }
     }
-#endif//sy
   }
 }
 
@@ -621,8 +615,8 @@ void sendOscMsgAdc(void)
     if((gAdcEnableState & (1 << i)) == (1 << i) && adcSendFlag[i] == TRUE)
     {
       sendmsg2[msg_index2] = 'a';
-      sendmsg2[msg_index2 + 1] = (i << 4) + ((anlg_avg[i] & 0x0300) >> 8);
-      sendmsg2[msg_index2 + 2] = (anlg_avg[i] & 0x00FF);
+      sendmsg2[msg_index2 + 1] = (i << 4) + ((anlg1[i] & 0x0300) >> 8);
+      sendmsg2[msg_index2 + 2] = (anlg1[i] & 0x00FF);
       msg_index2 += 3;
       adcSendFlag[i] = FALSE;
     }
@@ -633,7 +627,6 @@ void sendOscMsgAdc(void)
     msg_index2 = 0;
     CDCTxService();
   }
-  //sy CDCTxService();
   delayUs(1);
 }
 
