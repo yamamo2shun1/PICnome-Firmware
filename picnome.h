@@ -20,10 +20,11 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.h,v.1.2.01 2011/05/20
+ * picnome.h,v.1.2.02 2011/05/20
  */
 
 //sy #define ONE_TWENTY_EIGHT
+//dora #define MULTI_PLEXER
 
 #include "usb.h"
 #include "usb_function_cdc.h"
@@ -76,16 +77,33 @@ BOOL buttonCheck(int row, int index);
 void sendOscMsgPress(void);
 
 //A/D Conversion Settings
-#define NUM_ADC_PINS 6//max = 6
-#define ADC_CHK_NUM 8//sy 4
+#ifdef MULTI_PLEXER
+  #define NUM_ADC_PINS 11//max = 11
+  #define NUM_MP_PINS 8//max = 8
+  #define ADC_CHK_NUM 8//sy 4
+#else
+  #define NUM_ADC_PINS 6//max = 6
+  #define ADC_CHK_NUM 8//sy 4
+#endif
 
-BYTE gAdcEnableState = 0;
+
+#ifdef MULTI_PLEXER
+  WORD gAdcEnableState = 0;
+#else
+  BYTE gAdcEnableState = 0;
+#endif
 BOOL enableAdcFlag = FALSE;
 BYTE countChk = 0, enableAdcNum = 0;
 BOOL adcSendFlag[NUM_ADC_PINS];
 WORD anlg1[NUM_ADC_PINS];
 WORD anlg[ADC_CHK_NUM][NUM_ADC_PINS];
 WORD anlg0[NUM_ADC_PINS];
+
+//MULTI_PLEXER
+#ifdef MULTI_PLEXER
+  BYTE scanID;
+  BYTE scanCount;
+#endif
 
 void enableAdc(int port);
 void disableAdc(int port);
@@ -117,3 +135,4 @@ void receiveOscMsgs(void);
 void delayUs(WORD usec);
 void delayMs(WORD msec);
 int my_atoi(char s);
+

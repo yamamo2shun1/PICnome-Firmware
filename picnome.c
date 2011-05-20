@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.1.2.01 2011/05/20
+ * picnome.c,v.1.2.02 2011/05/20
  */
 
 #include "picnome.h"
@@ -30,9 +30,14 @@
 int main(void)
 {
   CLKDIV = 0;
+#ifdef MULTI_PLEXER
+  AD1PCFGL = 0xFFF8;//AN0,AN1,AN2
+  TRISB = 0x10A3;//1000 0000 1010 0011
+#else
   AD1PCFGL = 0xFFC0;//AN0,AN1,AN2,AN3,AN4,AN5
-  TRISA = 0x0003;
   TRISB = 0x00AF;
+#endif
+  TRISA = 0x0003;
   ODCBbits.ODB9 = 1;
   ODCBbits.ODB4 = 1;
   ODCAbits.ODA4 = 1;
@@ -65,11 +70,29 @@ int main(void)
   AD1CON2 = 0x042C;//sy 0x0414;
   AD1CON3 = 0x1F02;//sy 0x1F05;
   AD1CHS =  0x0000;
+
+#ifdef MULTI_PLEXER
+  AD1PCFG = 0xFFF8;
+  AD1CSSL = 0x0007;
+#else
   AD1PCFG = 0xFFC0;
   AD1CSSL = 0x003F;
+#endif
+
   IEC0bits.AD1IE = 1;
+
+  gAdcEnableState = 0x0000;
+
+#ifdef MULTI_PLEXER
+  scanID = 0;
+  scanCount = 0;
+  MP_A = (scanID & 0x01);
+  MP_B = ((scanID >> 1) & 0x01);
+  MP_C = ((scanID >> 2) & 0x01);
+#endif
+
   countChk = 0;
-  for(i = 0; i < 6; i++)
+  for(i = 0; i < NUM_ADC_PINS; i++)
   {
     adcSendFlag[i] = FALSE;
     anlg1[i] = 0;
@@ -119,7 +142,7 @@ void initLedDriver(void)
   sendSpiLED(0x0C, 0x01);         // Shutdown Normal Operation
   sendSpiLED(0x0F, 0x00);         // Display Test Off
 
- // print startup pattern 
+ // print startup pattern
   sendSpiLED(0x0A, 0x0F); // Max Intensity 0x00[min] - 0x0F[max]
   sendSpiLED(1, 0);
   sendSpiLED(2, 0);
@@ -183,7 +206,7 @@ void initLedDriver(void)
   sendSpiLED2(0x0C, 0x01, 0x0C, 0x01); // Shutdown Normal Operation
   sendSpiLED2(0x0F, 0x00, 0x0F, 0x00); // Display Test Off
 
- // print startup pattern 
+ // print startup pattern
   sendSpiLED2(0x0A, 0x0F, 0x0A, 0x0F); // Max Intensity 0x00[min] - 0x0F[max]
   sendSpiLED2(1, 0, 1, 0);
   sendSpiLED2(2, 0, 2, 0);
@@ -303,7 +326,7 @@ void receiveOscMsgs(void)
           led_data[i] |= 1 << column;
         else
           led_data[i] &= ~(1 << column);
-        
+
         sendSpiLED(i + 1, led_data[i]);
       }
 #else//for one twenty eight
@@ -324,7 +347,7 @@ void receiveOscMsgs(void)
           led_data[i] |= (0x0001 << column);
         else
           led_data[i] &= ~(0x0001 << column);
-        
+
         lsb0 = (BYTE)(led_data[i] & 0x00FF);
         lsb1 = (BYTE)((led_data[i] >> 8) & 0x00FF);
         sendSpiLED2(i + 1, lsb0, i + 1, lsb1);
@@ -340,7 +363,7 @@ void receiveOscMsgs(void)
       row = atoi(ch);
       ch = strtok(0, space);
       data = atoi(ch);
-      
+
       if(firstRun == TRUE)
       {
         for(i = 0; i < 8; i++)
@@ -353,14 +376,14 @@ void receiveOscMsgs(void)
       led_data[row] = data;
       sendSpiLED(row + 1, led_data[row]);
 #else//for one twenty eight
-      BYTE row; 
+      BYTE row;
       WORD data;
       ch = strtok(string, space);
       ch = strtok(0, space);
       row = atoi(ch);
       ch = strtok(0, space);
       data = atoi(ch);
-      
+
       if(firstRun == TRUE)
       {
         for(i = 0; i < 8; i++)
@@ -559,10 +582,14 @@ void enableAdc(int port)
   if(port >= NUM_ADC_PINS)
     return;
 
+#ifdef MULTI_PLEXER
+  if((gAdcEnableState & 0x0EFF) == 0)
+#else
   if((gAdcEnableState & 0x3F) == 0)
+#endif
     enableAdcFlag = TRUE;
 
-  gAdcEnableState |= (1 << port);
+  gAdcEnableState |= ((WORD)1 << port);
   enableAdcNum++;
 }
 
@@ -571,9 +598,13 @@ void disableAdc(int port)
   if(port >= NUM_ADC_PINS)
     return;
 
-  gAdcEnableState &= ~(1 << port);
+  gAdcEnableState &= ~((WORD)1 << port);
 
+#ifdef MULTI_PLEXER
+  if((gAdcEnableState & 0x0EFF) == 0)
+#else
   if((gAdcEnableState & 0x3F) == 0)
+#endif
     enableAdcFlag = FALSE;
   enableAdcNum--;
 }
@@ -581,19 +612,39 @@ void disableAdc(int port)
 void __attribute__((interrupt, auto_psv)) _ADC1Interrupt(void)
 {
   IFS0bits.AD1IF = 0;
+#ifdef MULTI_PLEXER
+  anlg[countChk][0]          = ((ADC1BUF0 + ADC1BUF4 + ADC1BUF8) / 3);
+  anlg[countChk][1]          = ((ADC1BUF1 + ADC1BUF5 + ADC1BUF9) / 3);
+  anlg[countChk][2]          = ((ADC1BUF2 + ADC1BUF6 + ADC1BUFA) / 3);
+  if(scanCount > 2)
+    anlg[countChk][3 + scanID] = ((ADC1BUF3 + ADC1BUF7 + ADC1BUFB) / 3);
+
+  MP_A = (scanID & 0x01);
+  MP_B = ((scanID >> 1) & 0x01);
+  MP_C = ((scanID >> 2) & 0x01);
+  scanCount++;
+  if(scanCount > 4) {
+    scanID++;
+    scanCount = 0;
+  }
+  if(scanID >= NUM_MP_PINS)
+    scanID = 0;
+#else
   anlg[countChk][0] = ((ADC1BUF0 + ADC1BUF6) / 2);
   anlg[countChk][1] = ((ADC1BUF1 + ADC1BUF7) / 2);
   anlg[countChk][2] = ((ADC1BUF2 + ADC1BUF8) / 2);
   anlg[countChk][3] = ((ADC1BUF3 + ADC1BUF9) / 2);
   anlg[countChk][4] = ((ADC1BUF4 + ADC1BUFA) / 2);
   anlg[countChk][5] = ((ADC1BUF5 + ADC1BUFB) / 2);
+#endif
+
   countChk++;
   if(countChk >= ADC_CHK_NUM)
     countChk = 0;
 
   for(p = 0; p < NUM_ADC_PINS; p++)
   {
-    if(countChk == 0 && (gAdcEnableState & (1 << p)) == (1 << p))
+    if(countChk == 0 && (gAdcEnableState & ((WORD)1 << p)) == ((WORD)1 << p))
     {
       WORD sum = 0;
       for(q = 0; q < ADC_CHK_NUM; q++)
@@ -610,9 +661,9 @@ void __attribute__((interrupt, auto_psv)) _ADC1Interrupt(void)
 
 void sendOscMsgAdc(void)
 {
-  for(i = 0; i < 6; i++)
+  for(i = 0; i < NUM_ADC_PINS; i++)
   {
-    if((gAdcEnableState & (1 << i)) == (1 << i) && adcSendFlag[i] == TRUE)
+    if((gAdcEnableState & ((DWORD)1 << i)) == ((DWORD)1 << i) && adcSendFlag[i] == TRUE)
     {
       sendmsg2[msg_index2] = 'a';
       sendmsg2[msg_index2 + 1] = (i << 4) + ((anlg1[i] & 0x0300) >> 8);
@@ -630,7 +681,6 @@ void sendOscMsgAdc(void)
   delayUs(1);
 }
 
-
 void delayUs(WORD usec)
 {
   usec = (WORD)(CLOCK * usec) / 10;
@@ -640,7 +690,7 @@ void delayUs(WORD usec)
     asm("NOP");
     asm("NOP");
     asm("NOP");
-    asm("NOP");					
+    asm("NOP");
     usec--;
   }
 }
@@ -700,7 +750,7 @@ void USBCBSuspend(void)
 	//Example power saving code.  Insert appropriate code here for the desired
 	//application behavior.  If the microcontroller will be put to sleep, a
 	//process similar to that shown below may be used:
-	
+
 	//ConfigureIOPinsForLowPower();
 	//SaveStateOfAllInterruptEnableBits();
 	//DisableAllInterruptEnableBits();
@@ -709,10 +759,10 @@ void USBCBSuspend(void)
 	//RestoreStateOfAllPreviouslySavedInterruptEnableBits();	//Preferrably, this should be done in the USBCBWakeFromSuspend() function instead.
 	//RestoreIOPinsToNormal();									//Preferrably, this should be done in the USBCBWakeFromSuspend() function instead.
 
-	//IMPORTANT NOTE: Do not clear the USBActivityIF (ACTVIF) bit here.  This bit is 
-	//cleared inside the usb_device.c file.  Clearing USBActivityIF here will cause 
-	//things to not work as intended.	
-	
+	//IMPORTANT NOTE: Do not clear the USBActivityIF (ACTVIF) bit here.  This bit is
+	//cleared inside the usb_device.c file.  Clearing USBActivityIF here will cause
+	//things to not work as intended.
+
 
     #if defined(__C30__)
     #if 0
@@ -743,8 +793,8 @@ void USBCBSuspend(void)
  *					suspend mode (by "sending" 3+ms of idle).  Once in suspend
  *					mode, the host may wake the device back up by sending non-
  *					idle state signalling.
- *					
- *					This call back is invoked when a wakeup from USB suspend 
+ *
+ *					This call back is invoked when a wakeup from USB suspend
  *					is detected.
  *
  * Note:            None
@@ -754,7 +804,7 @@ void USBCBWakeFromSuspend(void)
 	// If clock switching or other power savings measures were taken when
 	// executing the USBCBSuspend() function, now would be a good time to
 	// switch back to normal full power run mode conditions.  The host allows
-	// a few milliseconds of wakeup time, after which the device must be 
+	// a few milliseconds of wakeup time, after which the device must be
 	// fully back to normal, and capable of receiving and processing USB
 	// packets.  In order to do this, the USB module must receive proper
 	// clocking (IE: 48MHz clock must be available to SIE for full speed USB
@@ -845,7 +895,7 @@ void USBCBErrorHandler(void)
 	// data loss occurs.  The system will typically recover
 	// automatically, without the need for application firmware
 	// intervention.
-	
+
 	// Nevertheless, this callback function is provided, such as
 	// for debugging purposes.
 }
@@ -871,9 +921,9 @@ void USBCBErrorHandler(void)
  *					that is being implemented.  For example, a HID
  *					class device needs to be able to respond to
  *					"GET REPORT" type of requests.  This
- *					is not a standard USB chapter 9 request, and 
+ *					is not a standard USB chapter 9 request, and
  *					therefore not handled by usb_device.c.  Instead
- *					this request should be handled by class specific 
+ *					this request should be handled by class specific
  *					firmware, such as that contained in usb_function_hid.c.
  *
  * Note:            None
@@ -920,9 +970,9 @@ void USBCBStdSetDscHandler(void)
  *
  * Overview:        This function is called when the device becomes
  *                  initialized, which occurs after the host sends a
- * 					SET_CONFIGURATION (wValue not = 0) request.  This 
- *					callback function should initialize the endpoints 
- *					for the device's usage according to the current 
+ * 					SET_CONFIGURATION (wValue not = 0) request.  This
+ *					callback function should initialize the endpoints
+ *					for the device's usage according to the current
  *					configuration.
  *
  * Note:            None
@@ -957,7 +1007,7 @@ BOOL USER_USB_CALLBACK_EVENT_HANDLER(USB_EVENT event, void *pdata, WORD size)
 {
     switch(event)
     {
-        case EVENT_CONFIGURED: 
+        case EVENT_CONFIGURED:
             USBCBInitEP();
             break;
         case EVENT_SET_DESCRIPTOR:
@@ -983,6 +1033,6 @@ BOOL USER_USB_CALLBACK_EVENT_HANDLER(USB_EVENT event, void *pdata, WORD size)
             break;
         default:
             break;
-    }      
-    return TRUE; 
+    }
+    return TRUE;
 }
