@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+SELF_DIR=`dirname $0`
+cd ${SELF_DIR}
+./mphidflash -w picnome-v12.X/dist/default/production/picnome-v12.X.production.hex -r

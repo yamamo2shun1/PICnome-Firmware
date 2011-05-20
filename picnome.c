@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with PICnome. if not, see <http:/www.gnu.org/licenses/>.
  *
- * picnome.c,v.1.1.05 2010/10/08
+ * picnome.c,v.1.2.01 2011/05/20
  */
 
 #include "picnome.h"
